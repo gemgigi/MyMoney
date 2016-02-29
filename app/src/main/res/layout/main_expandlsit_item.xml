@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/mm_main_sublist_day_tv"
+        android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+      
+       />
+    <TextView
+        android:id="@+id/mm_main_sublist_category_tv"
+        android:layout_width="0dp"
+        android:layout_weight="0.3"
+        android:layout_height="wrap_content"
+
+        android:textSize="18sp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        />
+    <TextView
+        android:id="@+id/mm_main_sublist_action_tv"
+        android:layout_width="0dp"
+        android:layout_weight="0.1"
+        android:layout_height="wrap_content"
+
+        android:gravity="center"
+        android:textSize="18sp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:visibility="gone"
+
+        />
+    <TextView
+        android:id="@+id/mm_main_sublist_money_tv"
+        android:layout_width="0dp"
+        android:layout_weight="0.4"
+        android:layout_height="wrap_content"
+
+        android:textSize="18sp"
+        android:gravity="right"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:textColor="@color/expense"
+        />
+
+
+</LinearLayout>

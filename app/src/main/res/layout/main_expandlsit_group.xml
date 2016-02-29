@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/mm_main_list_month_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="02月"
+        android:textSize="20sp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:textColor="@color/colorText"
+        />
+
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.4"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+                <TextView
+                    android:id="@+id/mm_main_list_income_type"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:layout_height="wrap_content"
+                    android:text="收"
+                    android:textSize="14sp"
+                    android:textColor="@color/income"/>
+
+                <TextView
+                    android:id="@+id/mm_main_list_income_tv"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.8"
+                    android:layout_height="wrap_content"
+                    android:text="20000.00"
+                    android:gravity="right"
+                    android:textSize="14sp"
+                    android:textColor="@color/income"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+                <TextView
+                    android:id="@+id/mm_main_list_expense_type"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:layout_height="wrap_content"
+                    android:text="支"
+                    android:textSize="14sp"
+                    android:textColor="@color/expense"/>
+
+                <TextView
+                    android:id="@+id/mm_main_list_expense_tv"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.8"
+                    android:layout_height="wrap_content"
+                    android:text="20000.00"
+                    android:gravity="right"
+                    android:textSize="14sp"
+                    android:textColor="@color/expense"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.6"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:id="@+id/mm_main_list_balance_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="余"
+                android:textSize="14sp"
+                android:layout_gravity="right"
+                android:paddingRight="16dp"
+                android:textColor="@color/colorText"/>
+            <TextView
+                android:id="@+id/mm_main_list_balance_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="9999999.99"
+                android:textSize="18sp"
+                android:layout_gravity="right"
+                android:paddingRight="16dp"
+                android:textColor="@color/colorText" />
+        </LinearLayout>
+
+
+
+
+
+
+</LinearLayout>

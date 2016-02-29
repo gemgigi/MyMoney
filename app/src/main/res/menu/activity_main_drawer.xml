@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/mm_income_expenses"
+            android:checked="true"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="我的收支" />
+        <item
+            android:id="@+id/mm_account"
+            android:icon="@drawable/ic_menu_gallery"
+            android:checked="true"
+            android:title="我的账户" />
+        <item
+            android:id="@+id/mm_category"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:checked="true"
+            android:title="收支分类" />
+        <item
+            android:id="@+id/mm_setting"
+            android:icon="@drawable/ic_menu_manage"
+            android:checked="true"
+            android:title="设置" />
+    </group>
+
+    <!-- 子标题
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send" />
+        </menu>
+    </item>
+    -->
+</menu>
