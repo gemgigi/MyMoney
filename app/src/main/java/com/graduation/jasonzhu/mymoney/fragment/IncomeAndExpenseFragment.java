@@ -17,8 +17,14 @@ import com.graduation.jasonzhu.mymoney.activity.EditExpenseActivity;
 import com.graduation.jasonzhu.mymoney.activity.EditIncomeActivity;
 import com.graduation.jasonzhu.mymoney.activity.MainActivity;
 import com.graduation.jasonzhu.mymoney.adapter.DayAccountExpandLvAdapter;
+import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
+import com.graduation.jasonzhu.mymoney.model.IncomeAndExpense;
+import com.graduation.jasonzhu.mymoney.model.Summary;
 import com.graduation.jasonzhu.mymoney.model.TestData;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by gemha on 2016/2/23.
@@ -30,6 +36,8 @@ public class IncomeAndExpenseFragment extends Fragment {
     private View rootView;
     private int lastClick = -1;
     private static final String TAG = "TEST";
+    private List<List<IncomeAndExpense>> ieList;
+    private MyMoneyDb myMoneyDb;
 
     @Override
     public void onAttach(Context context) {
@@ -46,6 +54,7 @@ public class IncomeAndExpenseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "IncomeAndExpenseFragment onCreateView");
+        getData();
         initView();
         expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
@@ -55,21 +64,17 @@ public class IncomeAndExpenseFragment extends Fragment {
 //                    return true;
 //                }
 //                return false;
-                if(lastClick == -1)
-                {
+                if (lastClick == -1) {
                     expandableListView.expandGroup(groupPosition);
                 }
 
-                if(lastClick != -1 && lastClick != groupPosition)
-                {
+                if (lastClick != -1 && lastClick != groupPosition) {
                     expandableListView.collapseGroup(lastClick);
                     expandableListView.expandGroup(groupPosition);
-                }
-                else if(lastClick == groupPosition)
-                {
-                    if(expandableListView.isGroupExpanded(groupPosition))
+                } else if (lastClick == groupPosition) {
+                    if (expandableListView.isGroupExpanded(groupPosition))
                         expandableListView.collapseGroup(groupPosition);
-                    else if(!expandableListView.isGroupExpanded(groupPosition))
+                    else if (!expandableListView.isGroupExpanded(groupPosition))
                         expandableListView.expandGroup(groupPosition);
                 }
 
@@ -117,7 +122,7 @@ public class IncomeAndExpenseFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG,"IncomeAndExpenseFragment onStart");
+        Log.d(TAG, "IncomeAndExpenseFragment onStart");
     }
 
     @Override
@@ -154,5 +159,21 @@ public class IncomeAndExpenseFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         Log.d(TAG, "IncomeAndExpenseFragment onDetach");
+    }
+
+    public Summary getYearSummary(){
+        return null;
+    }
+
+    public List<Summary> getMonthSummary(){
+        return null;
+    }
+
+    public List<List<IncomeAndExpense>> getData() {
+        ieList = new ArrayList<>();
+        myMoneyDb = MyMoneyDb.getInstance(getContext());
+        //查询income_expense表
+
+        return ieList;
     }
 }
