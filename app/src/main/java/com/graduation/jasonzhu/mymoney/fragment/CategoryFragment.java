@@ -2,6 +2,7 @@ package com.graduation.jasonzhu.mymoney.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -20,6 +21,9 @@ import com.graduation.jasonzhu.mymoney.activity.AddAccountActivity;
 import com.graduation.jasonzhu.mymoney.activity.AddCategoryActivity;
 import com.graduation.jasonzhu.mymoney.activity.MainActivity;
 import com.graduation.jasonzhu.mymoney.adapter.ViewPagerAdapter;
+import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
+import com.graduation.jasonzhu.mymoney.model.Category;
+import com.graduation.jasonzhu.mymoney.model.TestData;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 
 import java.util.ArrayList;
@@ -37,8 +41,8 @@ public class CategoryFragment extends Fragment {
     private List<Fragment> fragments = new ArrayList<>();
     private ViewPagerAdapter viewPagerAdapter;
     private static final String TAG = "TEST";
-
-
+    private MyMoneyDb myMoneyDb;
+    private boolean isFirstLoad = true;
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -55,13 +59,25 @@ public class CategoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "CategoryFragment onCreateView");
+        SharedPreferences sp = getActivity().getPreferences(Context.MODE_PRIVATE);
+        isFirstLoad = sp.getBoolean("isFirstLoad",true);
+        Log.d("TAG","isFirstLoad = "+isFirstLoad);
+        if(isFirstLoad){
+            myMoneyDb = MyMoneyDb.getInstance(getContext());
+            for(Category category: TestData.getCategoryList()){
+                myMoneyDb.insertCategory(category);
+            }
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean("isFirstLoad",false);
+            editor.commit();
+        }
         initView();
         setHasOptionsMenu(true);
         return rootView;
     }
 
     private void initView() {
-        rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.category_overview,null);
+        rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.category_overview, null);
         tabLayout = MainActivity.getTabLayout();
         viewPager = (ViewPager) rootView.findViewById(R.id.mm_main_category_vp);
         ExpenseCategoryFragment expenseCategoryFragment = new ExpenseCategoryFragment();
@@ -70,7 +86,7 @@ public class CategoryFragment extends Fragment {
         fragments.add(incomeCategoryFragment);
         tabTitles.add("收入");
         tabTitles.add("支出");
-        viewPagerAdapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(),MyApplication.getContext(),fragments,tabTitles);
+        viewPagerAdapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), MyApplication.getContext(), fragments, tabTitles);
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(viewPager);
@@ -79,7 +95,7 @@ public class CategoryFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main_category,menu);
+        inflater.inflate(R.menu.main_category, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -88,10 +104,14 @@ public class CategoryFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_category_add) {
             Intent intent = new Intent(getActivity(), AddCategoryActivity.class);
+            String type = (String) tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getText();
+            intent.putExtra("type", type);
             startActivity(intent);
+
         }
         return true;
     }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -101,7 +121,7 @@ public class CategoryFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG,"CategoryFragment onStart");
+        Log.d(TAG, "CategoryFragment onStart");
     }
 
     @Override
@@ -124,6 +144,7 @@ public class CategoryFragment extends Fragment {
 //            Log.d(TAG, "CategoryFragment tabLayout GONE");
 //        }
     }
+
     @Override
     public void onStop() {
         super.onStop();

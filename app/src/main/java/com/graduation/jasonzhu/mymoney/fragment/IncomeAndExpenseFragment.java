@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.graduation.jasonzhu.mymoney.R;
@@ -23,7 +24,9 @@ import com.graduation.jasonzhu.mymoney.model.Summary;
 import com.graduation.jasonzhu.mymoney.model.TestData;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,13 +34,18 @@ import java.util.List;
  */
 public class IncomeAndExpenseFragment extends Fragment {
 
+    private TextView yearBalanceTv;
+    private TextView yearIncomeTv;
+    private TextView yearExpenseTv;
     private ExpandableListView expandableListView;
     private DayAccountExpandLvAdapter dayAccountExpandLvAdapter;
     private View rootView;
+    private Summary yearSummary;
+    private List<Summary> groupList = new ArrayList<>();
+    private List<List<IncomeAndExpense>> childList = new ArrayList<>();
+    private MyMoneyDb myMoneyDb;
     private int lastClick = -1;
     private static final String TAG = "TEST";
-    private List<List<IncomeAndExpense>> ieList;
-    private MyMoneyDb myMoneyDb;
 
     @Override
     public void onAttach(Context context) {
@@ -50,11 +58,15 @@ public class IncomeAndExpenseFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "IncomeAndExpenseFragment onCreate");
     }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "IncomeAndExpenseFragment onCreateView");
-        getData();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+        Date date = new Date();
+        String time = dateFormat.format(date);
+        getData(time.split("-"));
         initView();
         expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
@@ -107,10 +119,16 @@ public class IncomeAndExpenseFragment extends Fragment {
         rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.income_expense_statistics, null);
         expandableListView = (ExpandableListView) rootView.findViewById(R.id.mm_main_expandlv);
         dayAccountExpandLvAdapter = new DayAccountExpandLvAdapter(MyApplication.getContext()
-                , TestData.getExpandListGroup(), TestData.getIncomeAndExpenseList());
+                , groupList, childList);
         expandableListView.setAdapter(dayAccountExpandLvAdapter);
         //去除箭头
         expandableListView.setGroupIndicator(null);
+        yearBalanceTv = (TextView) rootView.findViewById(R.id.mm_main_balance_tv);
+        yearIncomeTv = (TextView) rootView.findViewById(R.id.mm_main_income_tv);
+        yearExpenseTv = (TextView) rootView.findViewById(R.id.mm_main_expense_tv);
+        yearBalanceTv.setText(yearSummary.getBalance());
+        yearIncomeTv.setText(yearSummary.getIncome());
+        yearExpenseTv.setText(yearSummary.getExpense());
     }
 
     @Override
@@ -161,19 +179,22 @@ public class IncomeAndExpenseFragment extends Fragment {
         Log.d(TAG, "IncomeAndExpenseFragment onDetach");
     }
 
-    public Summary getYearSummary(){
-        return null;
-    }
 
-    public List<Summary> getMonthSummary(){
-        return null;
-    }
-
-    public List<List<IncomeAndExpense>> getData() {
-        ieList = new ArrayList<>();
+    public void getData(String[] time) {
         myMoneyDb = MyMoneyDb.getInstance(getContext());
-        //查询income_expense表
-
-        return ieList;
+        //查询年度总收入
+        yearSummary = myMoneyDb.getYearIncomeAndExpense(time[0]);
+        if (!"0.0".equals(yearSummary.getExpense()) && !"0.0".equals(yearSummary.getIncome())) {
+            //查询月总收入
+            groupList = myMoneyDb.getMonthIncomeAndExpense(time[0]);
+            //查询月明细
+            //  Log.d("DATA",Integer.valueOf(time[1]).toString());
+            for (int i = Integer.valueOf(time[1]); i > 0; i--) {
+                List<IncomeAndExpense> list = myMoneyDb.getDayIncomeAndExpense(time[0], time[1]);
+                if (list.size() > 0) {
+                    childList.add(list);
+                }
+            }
+        }
     }
 }

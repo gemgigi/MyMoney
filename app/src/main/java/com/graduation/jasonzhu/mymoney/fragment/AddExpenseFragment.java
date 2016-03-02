@@ -94,6 +94,7 @@ public class AddExpenseFragment extends Fragment  {
             }
 
         });
+
         return view;
     }
 
@@ -124,8 +125,6 @@ public class AddExpenseFragment extends Fragment  {
         //第一次没有点击主列表，没有对subListText赋值，所以subListText为空
         initAdapter(TestData.getSubCategory().get(0));
         subListText = TestData.getSubCategory().get(0);
-
-
         subList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

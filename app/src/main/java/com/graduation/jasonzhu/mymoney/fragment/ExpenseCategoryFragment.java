@@ -2,6 +2,7 @@ package com.graduation.jasonzhu.mymoney.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,10 +19,14 @@ import com.graduation.jasonzhu.mymoney.activity.EditCategoryActivity;
 import com.graduation.jasonzhu.mymoney.activity.EditExpenseActivity;
 import com.graduation.jasonzhu.mymoney.activity.EditIncomeActivity;
 import com.graduation.jasonzhu.mymoney.adapter.CategoryExpandLvAdapter;
+import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
+import com.graduation.jasonzhu.mymoney.model.Category;
 import com.graduation.jasonzhu.mymoney.model.TestData;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 
 import junit.framework.Test;
+
+import java.util.List;
 
 /**
  * Created by gemha on 2016/2/28.
@@ -31,6 +36,15 @@ public class ExpenseCategoryFragment extends Fragment {
     private ExpandableListView expandableListView;
     private CategoryExpandLvAdapter categoryExpandLvAdapter;
     private int lastClick = -1;
+    private List<Category> categoryList;
+    private MyMoneyDb myMoneyDb;
+
+
+    private List<Category> getCategoryList() {
+        myMoneyDb = MyMoneyDb.getInstance(getContext());
+        categoryList = myMoneyDb.getAllCategory();
+        return categoryList;
+    }
 
     private static final String TAG = "TEST";
 
@@ -50,6 +64,7 @@ public class ExpenseCategoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "ExpenseCategoryFragment onCreateView");
+
         initView();
         expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -63,7 +78,7 @@ public class ExpenseCategoryFragment extends Fragment {
 
                 if (itemType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
                     Intent intent = new Intent(getActivity(), EditCategoryActivity.class);
-                    intent.putExtra("data", TestData.getCategoryList().get(groupPosition));
+                    intent.putExtra("data", categoryList.get(position));
                     intent.putExtra("type", "一级类别");
                     startActivity(intent);
                     return true;
@@ -75,21 +90,17 @@ public class ExpenseCategoryFragment extends Fragment {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
 
-                if(lastClick == -1)
-                {
+                if (lastClick == -1) {
                     expandableListView.expandGroup(groupPosition);
                 }
 
-                if(lastClick != -1 && lastClick != groupPosition)
-                {
+                if (lastClick != -1 && lastClick != groupPosition) {
                     expandableListView.collapseGroup(lastClick);
                     expandableListView.expandGroup(groupPosition);
-                }
-                else if(lastClick == groupPosition)
-                {
-                    if(expandableListView.isGroupExpanded(groupPosition))
+                } else if (lastClick == groupPosition) {
+                    if (expandableListView.isGroupExpanded(groupPosition))
                         expandableListView.collapseGroup(groupPosition);
-                    else if(!expandableListView.isGroupExpanded(groupPosition))
+                    else if (!expandableListView.isGroupExpanded(groupPosition))
                         expandableListView.expandGroup(groupPosition);
                 }
 
@@ -101,7 +112,7 @@ public class ExpenseCategoryFragment extends Fragment {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 Intent intent = new Intent(getActivity(), EditCategoryActivity.class);
-                intent.putExtra("data", TestData.getCategoryList().get(groupPosition).getCategoryList().get(childPosition));
+                intent.putExtra("data", categoryList.get(groupPosition).getCategoryList().get(childPosition));
                 intent.putExtra("type", "二级类别");
                 startActivity(intent);
                 return false;
@@ -113,7 +124,7 @@ public class ExpenseCategoryFragment extends Fragment {
     private void initView() {
         rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.catrgory_expense_list, null);
         expandableListView = (ExpandableListView) rootView.findViewById(R.id.mm_main_category_expense_list);
-        categoryExpandLvAdapter = new CategoryExpandLvAdapter(getContext(), TestData.getCategoryList());
+        categoryExpandLvAdapter = new CategoryExpandLvAdapter(getContext(), getCategoryList());
         expandableListView.setAdapter(categoryExpandLvAdapter);
         expandableListView.setGroupIndicator(null);
     }

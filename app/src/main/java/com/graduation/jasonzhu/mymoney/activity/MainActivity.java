@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        setSupportActionBar(toolbar);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         tabLayout = (TabLayout) findViewById(R.id.mm_main_category_tab);
+        setSupportActionBar(toolbar);
     }
 
     public static TabLayout getTabLayout() {

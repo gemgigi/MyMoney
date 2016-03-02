@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.graduation.jasonzhu.mymoney.R;
 import com.graduation.jasonzhu.mymoney.model.IncomeAndExpense;
+import com.graduation.jasonzhu.mymoney.model.Summary;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 import com.graduation.jasonzhu.mymoney.util.TimeUtil;
 
@@ -24,10 +25,10 @@ import java.util.List;
 public class DayAccountExpandLvAdapter extends BaseExpandableListAdapter {
 
     private Context context;
-    private List<String> expandListGroup;
+    private List<Summary> expandListGroup;
     private List<List<IncomeAndExpense>> expandListChild;
 
-    public DayAccountExpandLvAdapter(Context context, List<String> expandListGroup, List<List<IncomeAndExpense>> expandListChild) {
+    public DayAccountExpandLvAdapter(Context context, List<Summary> expandListGroup, List<List<IncomeAndExpense>> expandListChild) {
         this.context = context;
         this.expandListGroup = expandListGroup;
         this.expandListChild = expandListChild;
@@ -84,7 +85,10 @@ public class DayAccountExpandLvAdapter extends BaseExpandableListAdapter {
             groupView = convertView;
             groupHolder = (GroupHolder) groupView.getTag();
         }
-        groupHolder.month_tv.setText(expandListGroup.get(groupPosition));
+        groupHolder.month_tv.setText(expandListGroup.get(groupPosition).getMonth());
+        groupHolder.income_tv.setText(expandListGroup.get(groupPosition).getIncome());
+        groupHolder.expense_tv.setText(expandListGroup.get(groupPosition).getExpense());
+        groupHolder.balance_tv.setText(expandListGroup.get(groupPosition).getBalance());
         return groupView;
     }
 
@@ -104,11 +108,11 @@ public class DayAccountExpandLvAdapter extends BaseExpandableListAdapter {
             itemHolder = (ItemHolder) childView.getTag();
         }
 
-        String currDay = TimeUtil.getDay(expandListChild.get(groupPosition).get(childPosition).getTime());
+        String currDay = TimeUtil.getDay(expandListChild.get(groupPosition).get(childPosition).getSaveTime());
         if (childPosition == 0) {
             itemHolder.day_tv.setText(currDay);
         } else {
-            String beforeDay = TimeUtil.getDay(expandListChild.get(groupPosition).get(childPosition - 1).getTime());
+            String beforeDay = TimeUtil.getDay(expandListChild.get(groupPosition).get(childPosition - 1).getSaveTime());
 
 
             if (beforeDay != null && !"".equals(beforeDay)) {

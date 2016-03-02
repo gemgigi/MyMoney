@@ -10,6 +10,9 @@ public class Account implements Serializable {
     private String accountName;
     private float accountMoney;
 
+    public Account() {
+    }
+
     public Account(String accountName, float accountMoney) {
         this.accountName = accountName;
         this.accountMoney = accountMoney;

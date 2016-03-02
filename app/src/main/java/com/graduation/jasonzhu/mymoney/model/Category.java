@@ -2,7 +2,6 @@ package com.graduation.jasonzhu.mymoney.model;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by gemha on 2016/2/19.
@@ -11,19 +10,31 @@ public class Category implements Serializable {
     private int id;
     private String type;
     private String name;
-    private String time;
+    private String updateTime;
+    private String syncTime;
     private List<Category> categoryList;
+    private int parentId;
 
-    public Category(String type, String name, String time) {
+    public Category() {
+    }
+
+    public Category(int id, String type, String name, String time) {
+        this.id = id;
         this.name = name;
-        this.time = time;
+        this.updateTime = time;
         this.type = type;
     }
 
-    public Category(String type, String name, String time, List<Category>  categoryList) {
+    public Category(String type, String name, String time) {
         this.name = name;
-        this.time = time;
+        this.updateTime = time;
         this.type = type;
+    }
+
+    public Category(String type, String name, String time, List<Category> categoryList) {
+        this.type = type;
+        this.name = name;
+        this.updateTime = time;
         this.categoryList = categoryList;
     }
 
@@ -44,12 +55,28 @@ public class Category implements Serializable {
         this.name = name;
     }
 
-    public String getTime() {
-        return time;
+    public String getUpdateTime() {
+        return updateTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getSyncTime() {
+        return syncTime;
+    }
+
+    public void setSyncTime(String syncTime) {
+        this.syncTime = syncTime;
+    }
+
+    public int getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
     }
 
     public String getType() {

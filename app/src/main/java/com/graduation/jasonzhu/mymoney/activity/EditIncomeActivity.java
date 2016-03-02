@@ -41,7 +41,7 @@ public class EditIncomeActivity extends AppCompatActivity {
         //Log.d("edit_expense","money = "+incomeAndExpense.getMoney());
         moneyEt.setText(String.valueOf(incomeAndExpense.getMoney()));
         setSpinnerItemSelectedByValue(incomeAndExpense.getAccount().getAccountName());
-        timeTv.setText(incomeAndExpense.getTime());
+        timeTv.setText(incomeAndExpense.getSaveTime());
         mainCategoryTv.setText(incomeAndExpense.getCategory().getName());
         subCategoryTv.setText(incomeAndExpense.getCategory().getCategoryList().get(0).getName());
     }

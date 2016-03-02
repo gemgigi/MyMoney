@@ -13,7 +13,7 @@ public class MyMoneyOpenHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_ACCOUNT = "create table if not exists account(" +
             "id integer primary key autoincrement," +
             "accountName text not null unique," +
-            "balance real not null default 0" +
+            "balance real not null default 0," +
             "syncTime text," +
             "updateTime text);";
     private static final String CREATE_TABLE_CATEGORY = "create table if not exists category(" +

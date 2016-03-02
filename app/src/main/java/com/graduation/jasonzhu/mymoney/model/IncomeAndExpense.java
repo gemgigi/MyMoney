@@ -5,18 +5,39 @@ import java.io.Serializable;
 /**
  * Created by gemha on 2016/2/19.
  */
-public class IncomeAndExpense implements Serializable{
-    private int id ;
+public class IncomeAndExpense implements Serializable {
+    private int id;
     private float money;
     private String type;
-    private String time;
+    private String saveTime;
+    private String syncTime;
+    private String updateTime;
+    private String remark;
     private Account account;
     private Category category;
 
-    public IncomeAndExpense(String type,float money, String time, Account account, Category category){
+    @Override
+    public String toString() {
+        return "IncomeAndExpense{" +
+                "id=" + id +
+                ", money=" + money +
+                ", type='" + type + '\'' +
+                ", saveTime='" + saveTime + '\'' +
+                ", syncTime='" + syncTime + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", remark='" + remark + '\'' +
+                ", account=" + account +
+                ", category=" + category +
+                '}';
+    }
+
+    public IncomeAndExpense() {
+    }
+
+    public IncomeAndExpense(String type, float money, String time, Account account, Category category) {
         this.type = type;
         this.money = money;
-        this.time = time;
+        this.saveTime = time;
         this.account = account;
         this.category = category;
     }
@@ -45,12 +66,12 @@ public class IncomeAndExpense implements Serializable{
         this.money = money;
     }
 
-    public String getTime() {
-        return time;
+    public String getSaveTime() {
+        return saveTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setSaveTime(String saveTime) {
+        this.saveTime = saveTime;
     }
 
     public Account getAccount() {
@@ -67,5 +88,29 @@ public class IncomeAndExpense implements Serializable{
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getSyncTime() {
+        return syncTime;
+    }
+
+    public void setSyncTime(String syncTime) {
+        this.syncTime = syncTime;
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

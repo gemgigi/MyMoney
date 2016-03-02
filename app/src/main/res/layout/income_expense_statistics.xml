@@ -10,7 +10,7 @@
     >
 
     <TextView
-        android:id="@+id/mm_main_money_tv"
+        android:id="@+id/mm_main_balance_tv"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:gravity="center"

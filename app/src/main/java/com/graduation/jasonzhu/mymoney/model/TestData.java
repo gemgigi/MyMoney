@@ -1,6 +1,10 @@
 package com.graduation.jasonzhu.mymoney.model;
 
+import com.graduation.jasonzhu.mymoney.adapter.DayAccountExpandLvAdapter;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,36 +31,70 @@ public class TestData {
 
     public static List<Category> getCategoryList() {
         categoryList = new ArrayList<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String time = dateFormat.format(date);
         List<Category> categoryChildList1 = new ArrayList<>();
-        categoryChildList1.add(new Category("支出","早餐","",null));
-        categoryChildList1.add(new Category("支出","午餐","",null));
-        categoryChildList1.add(new Category("支出","晚餐","",null));
+        categoryChildList1.add(new Category("支出","早餐",time));
+        categoryChildList1.add(new Category("支出","午餐",time));
+        categoryChildList1.add(new Category("支出","晚餐",time));
 
         List<Category> categoryChildList2 = new ArrayList<>();
-        categoryChildList2.add(new Category("支出","鞋子","",null));
-        categoryChildList2.add(new Category("支出","衣服","",null));
-        categoryChildList2.add(new Category("支出","裤子","",null));
-        categoryChildList2.add(new Category("支出","袜子","",null));
+        categoryChildList2.add(new Category("支出","鞋子",time));
+        categoryChildList2.add(new Category("支出","衣服",time));
+        categoryChildList2.add(new Category("支出","裤子",time));
+        categoryChildList2.add(new Category("支出","袜子",time));
 
         List<Category> categoryChildList3 = new ArrayList<>();
-        categoryChildList3.add(new Category("支出","书籍","",null));
-        categoryChildList3.add(new Category("支出","学习用具","",null));
-        categoryChildList3.add(new Category("支出","学费","",null));
+        categoryChildList3.add(new Category("支出","书籍",time));
+        categoryChildList3.add(new Category("支出","学习用具",time));
+        categoryChildList3.add(new Category("支出","学费",time));
 
         List<Category> categoryChildList4 = new ArrayList<>();
-        categoryChildList4.add(new Category("支出","水费","",null));
-        categoryChildList4.add(new Category("支出","电费","",null));
-        categoryChildList4.add(new Category("支出","煤气费","",null));
-        categoryChildList4.add(new Category("支出","房租","",null));
+        categoryChildList4.add(new Category("支出","水费",time));
+        categoryChildList4.add(new Category("支出","电费",time));
+        categoryChildList4.add(new Category("支出","煤气费",time));
+        categoryChildList4.add(new Category("支出","房租",time));
 
-        Category category1 = new Category("支出","用餐","",categoryChildList1);
-        Category category2 = new Category("支出","购物","",categoryChildList2);
-        Category category3 = new Category("支出","学习","",categoryChildList3);
-        Category category4 = new Category("支出","住房","",categoryChildList4);
+        List<Category> categoryChildList5 = new ArrayList<>();
+        categoryChildList5.add(new Category("支出","公共交通",time));
+        categoryChildList5.add(new Category("支出","打车",time));
+        categoryChildList5.add(new Category("支出","私家车",time));
+
+        List<Category> categoryChildList6 = new ArrayList<>();
+        categoryChildList6.add(new Category("支出","运动健身",time));
+        categoryChildList6.add(new Category("支出","腐败聚会",time));
+        categoryChildList6.add(new Category("支出","旅游",time));
+
+        List<Category> categoryChildList7 = new ArrayList<>();
+        categoryChildList7.add(new Category("收入","工资",time));
+        categoryChildList7.add(new Category("收入","房租",time));
+        categoryChildList7.add(new Category("收入","奖金",time));
+        categoryChildList7.add(new Category("收入","投资",time));
+        categoryChildList7.add(new Category("收入","兼职",time));
+
+        List<Category> categoryChildList8 = new ArrayList<>();
+        categoryChildList8.add(new Category("收入","中奖",time));
+        categoryChildList8.add(new Category("收入","意外之财",time));
+        categoryChildList8.add(new Category("收入","红包",time));
+
+        Category category1 = new Category("支出","餐饮",time,categoryChildList1);
+        Category category2 = new Category("支出","购物",time,categoryChildList2);
+        Category category3 = new Category("支出","学习",time,categoryChildList3);
+        Category category4 = new Category("支出","住房",time,categoryChildList4);
+        Category category5= new Category("支出","行车交通",time,categoryChildList5);
+        Category category6= new Category("支出","休闲娱乐",time,categoryChildList6);
+        Category category7 = new Category("收入","职业收入",time,categoryChildList7);
+        Category category8 = new Category("收入","其他收入",time,categoryChildList8);
+
         categoryList.add(category1);
         categoryList.add(category2);
         categoryList.add(category3);
         categoryList.add(category4);
+        categoryList.add(category5);
+        categoryList.add(category6);
+        categoryList.add(category7);
+        categoryList.add(category8);
         return categoryList;
     }
 
