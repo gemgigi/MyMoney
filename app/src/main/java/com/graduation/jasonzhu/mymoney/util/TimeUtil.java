@@ -8,12 +8,14 @@ import java.util.Date;
  */
 public class TimeUtil {
 
-    public static String getCurrentTime() {
+    public static String getCurrentTime(String format) {
         SimpleDateFormat sDateFormat = new SimpleDateFormat("M月d日 H:m");
         Date curDate = new Date(System.currentTimeMillis());
         String time = sDateFormat.format(curDate);
         return time;
     }
+
+
 
 
     public static String getMonth(String time) {

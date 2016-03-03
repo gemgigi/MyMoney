@@ -40,7 +40,7 @@ public class AddExchangeFragment extends Fragment {
         intoSpinner.setAdapter(spinnerAdapter);
         outSpinner.setAdapter(spinnerAdapter);
         date_tv = (TextView) view.findViewById(R.id.mm_exchange_date_tv);
-        date_tv.setText(TimeUtil.getCurrentTime());
+        date_tv.setText(TimeUtil.getCurrentTime("M月d日 H:m"));
         date_tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

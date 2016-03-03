@@ -1,7 +1,11 @@
 package com.graduation.jasonzhu.mymoney.activity;
 
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
@@ -25,10 +29,13 @@ import android.widget.Toast;
 
 import com.graduation.jasonzhu.mymoney.R;
 import com.graduation.jasonzhu.mymoney.adapter.DayAccountExpandLvAdapter;
+import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
 import com.graduation.jasonzhu.mymoney.fragment.AccountFragment;
 import com.graduation.jasonzhu.mymoney.fragment.CategoryFragment;
 import com.graduation.jasonzhu.mymoney.fragment.IncomeAndExpenseFragment;
 import com.graduation.jasonzhu.mymoney.model.TestData;
+import com.graduation.jasonzhu.mymoney.util.LoadDataCallBackListener;
+import com.graduation.jasonzhu.mymoney.util.MyApplication;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -44,13 +51,29 @@ public class MainActivity extends AppCompatActivity
     private IncomeAndExpenseFragment incomeAndExpenseFragment = new IncomeAndExpenseFragment();
     private AccountFragment accountFragment = new AccountFragment();
     private CategoryFragment categoryFragment = new CategoryFragment();
+    private boolean isFirstLoad = true;
+    private MyMoneyDb myMoneyDb;
+    private ProgressDialog progressDialog;
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
+        sp = getPreferences(Context.MODE_PRIVATE);
+        isFirstLoad = sp.getBoolean("isFirstLoad", true);
+        Log.d("isFirstLoad", "isFirstLoad = " + isFirstLoad);
+        if (isFirstLoad) {
+            if (progressDialog == null) {
+                progressDialog = new ProgressDialog(this);
+                progressDialog.setMessage("正在加载...");
+                progressDialog.setCanceledOnTouchOutside(false);
+                new LoadData().execute();
 
+            }
+
+        }
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,6 +92,7 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction().add(R.id.main_content, currentFragment).commit();
 
     }
+
     private void initView() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -76,6 +100,12 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         tabLayout = (TabLayout) findViewById(R.id.mm_main_category_tab);
         setSupportActionBar(toolbar);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 
     public static TabLayout getTabLayout() {
@@ -98,23 +128,6 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//      //  menu.clear();
-//        Log.d("TAG","type = "+type);
-//        switch (type){
-//            case "我的账户":
-//                getMenuInflater().inflate(R.menu.main_account, menu);
-//                break;
-//            case "我的收支":
-//                getMenuInflater().inflate(R.menu.main, menu);
-//                break;
-//            case "收支分类":
-//                break;
-//        }
-//        return true;
-//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -180,4 +193,38 @@ public class MainActivity extends AppCompatActivity
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    public class LoadData extends AsyncTask<Void, Integer, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.show();
+
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean("isFirstLoad", false);
+            editor.commit();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            myMoneyDb = MyMoneyDb.getInstance(MyApplication.getContext());
+            myMoneyDb.loadCategory(TestData.getCategoryList());
+            return null;
+        }
+    }
 }
+

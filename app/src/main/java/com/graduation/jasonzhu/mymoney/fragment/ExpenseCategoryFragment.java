@@ -26,6 +26,7 @@ import com.graduation.jasonzhu.mymoney.util.MyApplication;
 
 import junit.framework.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,13 +37,13 @@ public class ExpenseCategoryFragment extends Fragment {
     private ExpandableListView expandableListView;
     private CategoryExpandLvAdapter categoryExpandLvAdapter;
     private int lastClick = -1;
-    private List<Category> categoryList;
+    private List<Category> categoryList ;
     private MyMoneyDb myMoneyDb;
 
 
-    private List<Category> getCategoryList() {
+    public List<Category> getCategoryList() {
         myMoneyDb = MyMoneyDb.getInstance(getContext());
-        categoryList = myMoneyDb.getAllCategory();
+        categoryList = myMoneyDb.getAllCategory("支出");
         return categoryList;
     }
 
@@ -122,8 +123,8 @@ public class ExpenseCategoryFragment extends Fragment {
     }
 
     private void initView() {
-        rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.catrgory_expense_list, null);
-        expandableListView = (ExpandableListView) rootView.findViewById(R.id.mm_main_category_expense_list);
+        rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.category_list, null);
+        expandableListView = (ExpandableListView) rootView.findViewById(R.id.mm_main_category_expanlist);
         categoryExpandLvAdapter = new CategoryExpandLvAdapter(getContext(), getCategoryList());
         expandableListView.setAdapter(categoryExpandLvAdapter);
         expandableListView.setGroupIndicator(null);
@@ -146,6 +147,10 @@ public class ExpenseCategoryFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "ExpenseCategoryFragment onResume");
+        getCategoryList();
+        categoryExpandLvAdapter.notifyDataSetChanged();
+
+        Log.d(TAG, "ExpenseCategoryFragment 刷新");
     }
 
     @Override

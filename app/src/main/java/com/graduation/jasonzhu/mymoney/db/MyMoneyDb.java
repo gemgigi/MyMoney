@@ -11,6 +11,8 @@ import com.graduation.jasonzhu.mymoney.model.Account;
 import com.graduation.jasonzhu.mymoney.model.Category;
 import com.graduation.jasonzhu.mymoney.model.IncomeAndExpense;
 import com.graduation.jasonzhu.mymoney.model.Summary;
+import com.graduation.jasonzhu.mymoney.model.TestData;
+import com.graduation.jasonzhu.mymoney.util.LoadDataCallBackListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,8 @@ public class MyMoneyDb {
     private SQLiteDatabase db;
     private MyMoneyOpenHelper openHelper;
     private static MyMoneyDb myMoneyDb;
+    private List<Category> categoryIncomeList = new ArrayList<>();
+    private List<Category> categoryExpenseList = new ArrayList<>();
 
     public MyMoneyDb(Context context) {
         openHelper = new MyMoneyOpenHelper(context, DB_NAME, null, VERSION);
@@ -77,12 +81,13 @@ public class MyMoneyDb {
         float income = 0;
         float expense = 0;
         int lastMonth = 0;
+        float money;
         Summary summary = null;
         Summary lastSummary = null;
         while (cursor.moveToNext()) {
             String type = cursor.getString(cursor.getColumnIndex("type"));
             int tempMonth = cursor.getInt(cursor.getColumnIndex("month"));
-            float money = cursor.getFloat(cursor.getColumnIndex("total"));
+            money = cursor.getFloat(cursor.getColumnIndex("total"));
             if (lastMonth != tempMonth) {
                 summary = new Summary();
                 if (lastSummary != null) {
@@ -114,14 +119,13 @@ public class MyMoneyDb {
                 "join account a on i.accountId = a.id " +
                 "where strftime('%m',i.saveTime) = ? and strftime('%Y',i.saveTime) = ? " +
                 "ORDER BY saveTime desc;";
-
         Cursor cursor = db.rawQuery(sql, new String[]{month, year});
         List<Category> categoryChildList = new ArrayList<>();
         while (cursor.moveToNext()) {
             categoryChildList.clear();
             IncomeAndExpense incomeAndExpense = new IncomeAndExpense();
             Category categoryChild = new Category();
-            Category categoryParent = null;
+            Category categoryParent;
             Account account = new Account();
             incomeAndExpense.setId(cursor.getInt(cursor.getColumnIndex("id")));
             incomeAndExpense.setType(cursor.getString(cursor.getColumnIndex("type")));
@@ -201,9 +205,24 @@ public class MyMoneyDb {
         return category;
     }
 
-    public List<Category> getMainCategory() {
-        List<Category> categoryList = new ArrayList<>();
-        Cursor cursor = db.query("category", null, "parentId is ?", new String[]{}, null, null, null);
+    public List<Category> getMainCategory(String type) {
+
+        List<Category> categoryList ;
+        Cursor cursor ;
+        if(!"".equals(type)){
+            cursor = db.query("category", null, "type = ? and parentId is ?", new String[]{type}, null, null, null);
+            if("收入".equals(type)){
+                categoryIncomeList.clear();
+                categoryList = categoryIncomeList;
+            }else {
+                categoryExpenseList.clear();
+                categoryList = categoryExpenseList;
+            }
+        }else{
+            cursor = db.query("category", null, "parentId is ?", new String[]{}, null, null, null);
+            categoryList = new ArrayList<>();
+        }
+
         while (cursor.moveToNext()) {
             Category category = new Category();
             category.setId(cursor.getInt(cursor.getColumnIndex("id")));
@@ -216,10 +235,10 @@ public class MyMoneyDb {
         return categoryList;
     }
 
-    public List<Category> getSubCategory(int id){
+    public List<Category> getSubCategory(int id) {
         List<Category> categoryList = new ArrayList<>();
-        Cursor cursor = db.query("category", null, "parentId = ?",new String[]{String.valueOf(id)}, null, null, null);
-        while (cursor.moveToNext()){
+        Cursor cursor = db.query("category", null, "parentId = ?", new String[]{String.valueOf(id)}, null, null, null);
+        while (cursor.moveToNext()) {
             Category category = new Category();
             category.setId(cursor.getInt(cursor.getColumnIndex("id")));
             category.setName(cursor.getString(cursor.getColumnIndex("categoryName")));
@@ -230,15 +249,31 @@ public class MyMoneyDb {
         cursor.close();
         return categoryList;
     }
-    public List<Category> getAllCategory() {
-        List<Category> categoryMainList = getMainCategory();
-        for (Category c:categoryMainList){
+
+    public List<Category> getAllCategory(String type) {
+        List<Category> categoryMainList = getMainCategory(type);
+        for (Category c : categoryMainList) {
             c.setCategoryList(getSubCategory(c.getId()));
         }
         return categoryMainList;
     }
 
+    public List<String> getAllCategoryName(){
+        List<String> names = new ArrayList<>();
+        Cursor cursor = db.query("category",new String[]{"categoryName"},null,null,null,null,null);
+        while (cursor.moveToNext()){
+            names.add(cursor.getString(cursor.getColumnIndex("categoryName")));
+        }
+        return names;
+    }
 
+
+    /**
+     * 1.只插入父分类
+     * 2.只插入子分类
+     * 3.父分类和子分类一起插入
+     * @param category
+     */
     public void insertCategory(Category category) {
         long newRow;
         if (category != null) {
@@ -251,19 +286,53 @@ public class MyMoneyDb {
                 values.put("parentId", category.getParentId());
             }
             newRow = db.insert("category", null, values);
-            Log.d("DATA", "newRow = " + String.valueOf(newRow));
-            if (category.getCategoryList() != null && category.getCategoryList().size() > 0) {
-                for (Category c : category.getCategoryList()) {
-                    values.clear();
-                    values.put("type", c.getType());
-                    values.put("categoryName", c.getName());
-                    values.put("updateTime", c.getUpdateTime());
-                    values.put("parentId", newRow);
-                    long row = db.insert("category", null, values);
-                    Log.d("DATA", "newRow2 = " + String.valueOf(row));
+            if (newRow > 0) {
+                if (category.getCategoryList() != null && category.getCategoryList().size() > 0) {
+                    for (Category c : category.getCategoryList()) {
+                        values.clear();
+                        values.put("type", c.getType());
+                        values.put("categoryName", c.getName());
+                        values.put("updateTime", c.getUpdateTime());
+                        values.put("parentId", newRow);
+                        db.insert("category", null, values);
+                    }
                 }
             }
         }
     }
 
+//    public void loadCategory(final List<Category> categoryList, final LoadDataCallBackListener loadDataCallBackListener) {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                int count = 0;
+//                //  db.beginTransaction();
+//                for (Category category : categoryList) {
+//                    try {
+//                        insertCategory(category);
+//                        count++;
+//                    } catch (Exception e) {
+////                        db.endTransaction();
+////                        loadDataCallBackListener.onError(e);
+//                        return;
+//                    }
+//                }
+////                if (count == categoryList.size()) {
+////                    db.setTransactionSuccessful();
+////                    db.endTransaction();
+////                    loadDataCallBackListener.onFinish();
+////                }
+//            }
+//        }).start();
+//    }
+
+    public void loadCategory(List<Category> categoryList) {
+        for (Category category : categoryList) {
+            try {
+                insertCategory(category);
+            } catch (Exception e) {
+            }
+        }
+
+    }
 }

@@ -147,6 +147,7 @@ public class IncomeAndExpenseFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "IncomeAndExpenseFragment onResume");
+
     }
 
     @Override

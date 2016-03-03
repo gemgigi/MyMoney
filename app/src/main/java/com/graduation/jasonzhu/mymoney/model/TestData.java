@@ -1,6 +1,7 @@
 package com.graduation.jasonzhu.mymoney.model;
 
 import com.graduation.jasonzhu.mymoney.adapter.DayAccountExpandLvAdapter;
+import com.graduation.jasonzhu.mymoney.util.TimeUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,9 +32,7 @@ public class TestData {
 
     public static List<Category> getCategoryList() {
         categoryList = new ArrayList<>();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = new Date();
-        String time = dateFormat.format(date);
+        String time = TimeUtil.getCurrentTime("yyyy-MM-dd HH:mm:ss");
         List<Category> categoryChildList1 = new ArrayList<>();
         categoryChildList1.add(new Category("支出","早餐",time));
         categoryChildList1.add(new Category("支出","午餐",time));

@@ -1,5 +1,6 @@
 package com.graduation.jasonzhu.mymoney.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.graduation.jasonzhu.mymoney.R;
 import com.graduation.jasonzhu.mymoney.activity.AddAccountActivity;
@@ -24,8 +26,10 @@ import com.graduation.jasonzhu.mymoney.adapter.ViewPagerAdapter;
 import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
 import com.graduation.jasonzhu.mymoney.model.Category;
 import com.graduation.jasonzhu.mymoney.model.TestData;
+import com.graduation.jasonzhu.mymoney.util.LoadDataCallBackListener;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +46,23 @@ public class CategoryFragment extends Fragment {
     private ViewPagerAdapter viewPagerAdapter;
     private static final String TAG = "TEST";
     private MyMoneyDb myMoneyDb;
-    private boolean isFirstLoad = true;
+    private ExpenseCategoryFragment expenseCategoryFragment ;
+    private IncomeCategoryFragment incomeCategoryFragment;
+    private List<Category> allCateogrys;
+    private List<String> allCateogryName;
+
+    public List<String> getAllCateogryName() {
+        myMoneyDb = MyMoneyDb.getInstance(getContext());
+        allCateogryName = myMoneyDb.getAllCategoryName();
+        return allCateogryName;
+    }
+
+    public List<Category> getAllCateogrys() {
+        myMoneyDb = MyMoneyDb.getInstance(getContext());
+        allCateogrys = myMoneyDb.getAllCategory("");
+        return allCateogrys;
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -59,31 +79,42 @@ public class CategoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "CategoryFragment onCreateView");
-        SharedPreferences sp = getActivity().getPreferences(Context.MODE_PRIVATE);
-        isFirstLoad = sp.getBoolean("isFirstLoad",true);
-        Log.d("TAG","isFirstLoad = "+isFirstLoad);
-        if(isFirstLoad){
-            myMoneyDb = MyMoneyDb.getInstance(getContext());
-            for(Category category: TestData.getCategoryList()){
-                myMoneyDb.insertCategory(category);
-            }
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putBoolean("isFirstLoad",false);
-            editor.commit();
-        }
+//        final SharedPreferences sp = getActivity().getPreferences(Context.MODE_PRIVATE);
+//        isFirstLoad = sp.getBoolean("isFirstLoad", true);
+//        Log.d("isFirstLoad", "isFirstLoad = " + isFirstLoad);
+//        if (isFirstLoad) {
+//            myMoneyDb = MyMoneyDb.getInstance(getContext());
+//            showProgressDialog();
+//            myMoneyDb.loadCategory(TestData.getCategoryList(), new LoadDataCallBackListener() {
+//                @Override
+//                public void onFinish() {
+//                    closeProgressDialog();
+//                    SharedPreferences.Editor editor = sp.edit();
+//                    editor.putBoolean("isFirstLoad", false);
+//                    editor.commit();
+//                }
+//                @Override
+//                public void onError(Exception e) {
+//                    closeProgressDialog();
+//                    Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//        }
         initView();
         setHasOptionsMenu(true);
         return rootView;
     }
 
+
+
     private void initView() {
         rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.category_overview, null);
         tabLayout = MainActivity.getTabLayout();
         viewPager = (ViewPager) rootView.findViewById(R.id.mm_main_category_vp);
-        ExpenseCategoryFragment expenseCategoryFragment = new ExpenseCategoryFragment();
-        IncomeCategoryFragment incomeCategoryFragment = new IncomeCategoryFragment();
-        fragments.add(expenseCategoryFragment);
+        expenseCategoryFragment = new ExpenseCategoryFragment();
+        incomeCategoryFragment = new IncomeCategoryFragment();
         fragments.add(incomeCategoryFragment);
+        fragments.add(expenseCategoryFragment);
         tabTitles.add("收入");
         tabTitles.add("支出");
         viewPagerAdapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), MyApplication.getContext(), fragments, tabTitles);
@@ -106,8 +137,13 @@ public class CategoryFragment extends Fragment {
             Intent intent = new Intent(getActivity(), AddCategoryActivity.class);
             String type = (String) tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getText();
             intent.putExtra("type", type);
+            if("收入".equals(type)){
+                intent.putStringArrayListExtra("categoryList", (ArrayList<String>) getAllCateogryName());
+            }
+            if("支出".equals(type)){
+                intent.putStringArrayListExtra("categoryList", (ArrayList<String>) getAllCateogryName());
+            }
             startActivity(intent);
-
         }
         return true;
     }
