@@ -114,6 +114,7 @@ public class ExpenseCategoryFragment extends Fragment {
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 Intent intent = new Intent(getActivity(), EditCategoryActivity.class);
                 intent.putExtra("data", categoryList.get(groupPosition).getCategoryList().get(childPosition));
+                intent.putExtra("mainCategoryName",categoryList.get(groupPosition).getName());
                 intent.putExtra("type", "二级类别");
                 startActivity(intent);
                 return false;

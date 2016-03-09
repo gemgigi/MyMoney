@@ -68,12 +68,20 @@ public class MyMoneyOpenHelper extends SQLiteOpenHelper {
         super(context, name, factory, version);
     }
 
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        db.execSQL("PRAGMA foreign_keys=ON");
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_ACCOUNT);
         db.execSQL(CREATE_TABLE_CATEGORY);
         db.execSQL(CREATE_TABLE_MONEY);
         db.execSQL(CREATE_TABLE_TRANSFER);
+
 //        db.execSQL(CREATE_TRIGGER_MONEY_INSERT);
 //        db.execSQL(CREATE_TRIGGER_MONEY_UPDATE);
 //        db.execSQL(CREATE_TRIGGER_MONEY_DELETE);
@@ -83,4 +91,6 @@ public class MyMoneyOpenHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
+
+
 }

@@ -20,8 +20,13 @@ import com.graduation.jasonzhu.mymoney.R;
 import com.graduation.jasonzhu.mymoney.activity.AddAccountActivity;
 import com.graduation.jasonzhu.mymoney.activity.EditAccountActivity;
 import com.graduation.jasonzhu.mymoney.adapter.AccountListViewAdapter;
+import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
+import com.graduation.jasonzhu.mymoney.model.Account;
 import com.graduation.jasonzhu.mymoney.model.TestData;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by gemha on 2016/2/23.
@@ -33,7 +38,14 @@ public class AccountFragment extends Fragment {
     private TextView balenceTv;
     private View rootView;
     private static final String TAG = "TEST";
+    private List<Account> accountList;
+    private MyMoneyDb myMoneyDb;
 
+    public List<Account> getAccountList() {
+        myMoneyDb = MyMoneyDb.getInstance(getContext());
+        accountList = myMoneyDb.getAllAccount();
+        return accountList;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -56,8 +68,8 @@ public class AccountFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), EditAccountActivity.class);
-                intent.putExtra("balence", TestData.getAccounts().get(position).getAccountMoney());
-                intent.putExtra("account_name", TestData.getAccounts().get(position).getAccountName());
+                intent.putExtra("account",accountList.get(position));
+                intent.putExtra("accountList", (Serializable) accountList);
                 startActivity(intent);
                 // startActivityForResult(intent,REQUEST_CODE);
             }
@@ -67,13 +79,21 @@ public class AccountFragment extends Fragment {
     }
 
     private void initView() {
-        rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.account_overview, null);
+        rootView = LayoutInflater.from(getContext()).inflate(R.layout.account_overview, null);
         accountListView = (ListView) rootView.findViewById(R.id.mm_main_account_list);
         balenceTv = (TextView) rootView.findViewById(R.id.mm_main_account_balence_tv);
-        accountListViewAdapter = new AccountListViewAdapter(getActivity(), R.layout.item_select_account, TestData.getAccounts());
+        accountListViewAdapter = new AccountListViewAdapter(getActivity(), R.layout.item_select_account, getAccountList());
         accountListView.setAdapter(accountListViewAdapter);
+        balenceTv.setText(getAllBalance());
     }
 
+    private String getAllBalance(){
+        float balance = 0;
+        for(Account account:accountList){
+            balance += account.getAccountMoney();
+        }
+        return String.valueOf(balance);
+    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main_account, menu);
@@ -85,6 +105,7 @@ public class AccountFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_account_add) {
             Intent intent = new Intent(getActivity(), AddAccountActivity.class);
+            intent.putExtra("accountList", (Serializable) accountList);
             startActivity(intent);
         }
         return true;
@@ -106,6 +127,11 @@ public class AccountFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "AccountFragment onResume");
+        getAccountList();
+        balenceTv.setText( getAllBalance());
+        accountListViewAdapter.notifyDataSetChanged();
+
+
     }
 
     @Override

@@ -108,7 +108,7 @@ public class CategoryFragment extends Fragment {
 
 
     private void initView() {
-        rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.category_overview, null);
+        rootView = LayoutInflater.from(getContext()).inflate(R.layout.category_overview, null);
         tabLayout = MainActivity.getTabLayout();
         viewPager = (ViewPager) rootView.findViewById(R.id.mm_main_category_vp);
         expenseCategoryFragment = new ExpenseCategoryFragment();
@@ -117,7 +117,7 @@ public class CategoryFragment extends Fragment {
         fragments.add(expenseCategoryFragment);
         tabTitles.add("收入");
         tabTitles.add("支出");
-        viewPagerAdapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), MyApplication.getContext(), fragments, tabTitles);
+        viewPagerAdapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getContext(), fragments, tabTitles);
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(viewPager);

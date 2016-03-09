@@ -85,7 +85,7 @@ public class DayAccountExpandLvAdapter extends BaseExpandableListAdapter {
             groupView = convertView;
             groupHolder = (GroupHolder) groupView.getTag();
         }
-        groupHolder.month_tv.setText(expandListGroup.get(groupPosition).getMonth());
+        groupHolder.month_tv.setText(expandListGroup.get(groupPosition).getMonth()+"月");
         groupHolder.income_tv.setText(expandListGroup.get(groupPosition).getIncome());
         groupHolder.expense_tv.setText(expandListGroup.get(groupPosition).getExpense());
         groupHolder.balance_tv.setText(expandListGroup.get(groupPosition).getBalance());
@@ -128,10 +128,10 @@ public class DayAccountExpandLvAdapter extends BaseExpandableListAdapter {
         itemHolder.money.setText(String.valueOf(expandListChild.get(groupPosition).get(childPosition).getMoney()));
         switch (expandListChild.get(groupPosition).get(childPosition).getType()){
             case "支出":
-                itemHolder.money.setTextColor(MyApplication.getContext().getResources().getColor(R.color.expense));
+                itemHolder.money.setTextColor(context.getResources().getColor(R.color.expense));
                 break;
             case "收入":
-                itemHolder.money.setTextColor(MyApplication.getContext().getResources().getColor(R.color.income));
+                itemHolder.money.setTextColor(context.getResources().getColor(R.color.income));
                 break;
         }
 

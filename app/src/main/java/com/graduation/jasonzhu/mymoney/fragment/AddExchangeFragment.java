@@ -1,6 +1,7 @@
 package com.graduation.jasonzhu.mymoney.fragment;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,8 +13,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.graduation.jasonzhu.mymoney.R;
+import com.graduation.jasonzhu.mymoney.activity.AddRecordActivity;
 import com.graduation.jasonzhu.mymoney.adapter.AccountSpinnerAdapter;
 import com.graduation.jasonzhu.mymoney.model.TestData;
+import com.graduation.jasonzhu.mymoney.util.LogUtil;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 import com.graduation.jasonzhu.mymoney.util.TimeUtil;
 
@@ -33,6 +36,7 @@ public class AddExchangeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LogUtil.d("FRAGMENT_ACTION", "AddExchangeFragment onCreateView");
         View view = inflater.inflate(R.layout.addexchange, container, false);
         intoSpinner = (Spinner) view.findViewById(R.id.mm_exchange_into_account_spinner);
         outSpinner = (Spinner) view.findViewById(R.id.mm_exchange_out_account_spinner);
@@ -56,5 +60,51 @@ public class AddExchangeFragment extends Fragment {
             }
         });
         return view;
+    }
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        LogUtil.d("FRAGMENT_ACTION","AddExchangeFragment onAttach");
+
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LogUtil.d("FRAGMENT_ACTION", "AddExchangeFragment onCreate");
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        LogUtil.d("FRAGMENT_ACTION", "AddExchangeFragment onActivityCreated");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        LogUtil.d("FRAGMENT_ACTION", "AddExchangeFragment onStart");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LogUtil.d("FRAGMENT_ACTION", "AddExchangeFragment onPause");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LogUtil.d("FRAGMENT_ACTION", "AddExchangeFragment onResume");
+        AddRecordActivity addRecordActivity = (AddRecordActivity) getActivity();
+        LogUtil.d("CURRENT_TAB", "AddExchange" + addRecordActivity.getCurrentTab());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LogUtil.d("FRAGMENT_ACTION", "AddExchangeFragment onStop");
     }
 }

@@ -65,6 +65,8 @@ public class AddRecordActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
     }
 
-
+    public String getCurrentTab(){
+        return tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getText().toString();
+    }
 
 }

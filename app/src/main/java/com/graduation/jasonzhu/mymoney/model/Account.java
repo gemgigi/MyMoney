@@ -9,6 +9,8 @@ public class Account implements Serializable {
     private int id;
     private String accountName;
     private float accountMoney;
+    private String updateTime;
+    private String syncTime;
 
     public Account() {
     }
@@ -40,5 +42,21 @@ public class Account implements Serializable {
 
     public void setAccountMoney(float accountMoney) {
         this.accountMoney = accountMoney;
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getSyncTime() {
+        return syncTime;
+    }
+
+    public void setSyncTime(String syncTime) {
+        this.syncTime = syncTime;
     }
 }

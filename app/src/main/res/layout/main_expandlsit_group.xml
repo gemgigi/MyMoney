@@ -11,10 +11,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="02月"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:textColor="@color/colorText"
         />
 
 
@@ -24,7 +23,7 @@
             android:layout_weight="0.4"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="10dp"
+            android:paddingLeft="14dp"
             >
             <LinearLayout
                 android:layout_width="match_parent"
@@ -88,7 +87,6 @@
                 android:text="余"
                 android:textSize="14sp"
                 android:layout_gravity="right"
-                android:paddingRight="16dp"
                 android:textColor="@color/colorText"/>
             <TextView
                 android:id="@+id/mm_main_list_balance_tv"
@@ -97,7 +95,6 @@
                 android:text="9999999.99"
                 android:textSize="18sp"
                 android:layout_gravity="right"
-                android:paddingRight="16dp"
                 android:textColor="@color/colorText" />
         </LinearLayout>
 

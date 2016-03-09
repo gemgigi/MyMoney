@@ -10,4 +10,6 @@
     <color name="colorText">#1b1919</color>
     <color name="expense">#0b8711</color>
     <color name="income">#d21212</color>
+    <color name="calculatorBtn">#cfcfcf</color>
+    <color name="categoryListSelected">#636061</color>
 </resources>

@@ -17,8 +17,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.graduation.jasonzhu.mymoney.R;
-import com.graduation.jasonzhu.mymoney.adapter.CategorySpinner;
+import com.graduation.jasonzhu.mymoney.adapter.CategorySpinnerAdapter;
 import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
+import com.graduation.jasonzhu.mymoney.model.Account;
 import com.graduation.jasonzhu.mymoney.model.Category;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 import com.graduation.jasonzhu.mymoney.util.TimeUtil;
@@ -39,7 +40,8 @@ public class AddCategoryActivity extends AppCompatActivity {
     private MyMoneyDb myMoneyDb;
     private String classfication;
     private Category mainCategorySelected;
-    private CategorySpinner categorySpinner;
+    private CategorySpinnerAdapter categorySpinnerAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +109,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                     category.setParentId(mainCategorySelected.getId());
                 }
                 myMoneyDb.insertCategory(category);
-                Log.d("分类","成功");
+                Toast.makeText(AddCategoryActivity.this,"添加成功！",Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -128,8 +130,8 @@ public class AddCategoryActivity extends AppCompatActivity {
         saveBtn = (Button) findViewById(R.id.mm_operate_category_save_btn);
         spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.categoryType, android.R.layout.simple_list_item_1);
         classficationSpinner.setAdapter(spinnerAdapter);
-        categorySpinner = new CategorySpinner(this, R.layout.item_maincategory, mainCategoryList);
-        mainClassficationSpinner.setAdapter(categorySpinner);
+        categorySpinnerAdapter = new CategorySpinnerAdapter(this, R.layout.item_maincategory, mainCategoryList);
+        mainClassficationSpinner.setAdapter(categorySpinnerAdapter);
         toolbar.setTitle("添加" + categoryType + "类别");
         toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white_24dp);
         setSupportActionBar(toolbar);

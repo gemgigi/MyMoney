@@ -16,13 +16,13 @@ import java.util.List;
 /**
  * Created by gemha on 2016/3/3.
  */
-public class CategorySpinner extends BaseAdapter {
+public class CategorySpinnerAdapter extends BaseAdapter {
 
     private Context context;
     private int resourceId;
     private List<Category> categoryList;
 
-    public CategorySpinner(Context context, int resource, List<Category> objects) {
+    public CategorySpinnerAdapter(Context context, int resource, List<Category> objects) {
         this.context = context;
         this.resourceId = resource;
         this.categoryList = objects;

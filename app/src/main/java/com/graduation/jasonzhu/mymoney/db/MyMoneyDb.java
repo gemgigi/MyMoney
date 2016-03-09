@@ -29,6 +29,10 @@ public class MyMoneyDb {
     private static MyMoneyDb myMoneyDb;
     private List<Category> categoryIncomeList = new ArrayList<>();
     private List<Category> categoryExpenseList = new ArrayList<>();
+    private List<Account> accountList = new ArrayList<>();
+
+    private List<Summary> monthSummaryList = new ArrayList<>();
+    private List<IncomeAndExpense> daySummaryList = new ArrayList<>();
 
     public MyMoneyDb(Context context) {
         openHelper = new MyMoneyOpenHelper(context, DB_NAME, null, VERSION);
@@ -66,15 +70,16 @@ public class MyMoneyDb {
         if (summary.getExpense() == null || "".equals(summary.getExpense())) {
             summary.setExpense(String.valueOf(expense));
         }
-        summary.setBalance(String.valueOf(Math.abs(expense - income)));
-        Log.d("DATA", "income = " + summary.getIncome()
-                + ", expense = " + summary.getExpense() + ",balance = " + summary.getBalance());
+
+        summary.setBalance(String.valueOf(income - expense));
+
+
         cursor.close();
         return summary;
     }
 
     public List<Summary> getMonthIncomeAndExpense(String year) {
-        List<Summary> summaries = new ArrayList<>();
+        monthSummaryList.clear();
         String sql = "select type,SUM(money) as total,strftime('%m',saveTime) as month from income_expense " +
                 "where strftime('%Y',saveTime) = ? GROUP BY strftime('%m',saveTime),type ORDER BY saveTime desc;";
         Cursor cursor = db.rawQuery(sql, new String[]{year});
@@ -82,7 +87,7 @@ public class MyMoneyDb {
         float expense = 0;
         int lastMonth = 0;
         float money;
-        Summary summary = null;
+        Summary summary = new Summary();
         Summary lastSummary = null;
         while (cursor.moveToNext()) {
             String type = cursor.getString(cursor.getColumnIndex("type"));
@@ -91,8 +96,15 @@ public class MyMoneyDb {
             if (lastMonth != tempMonth) {
                 summary = new Summary();
                 if (lastSummary != null) {
+                    if ("".equals(lastSummary.getIncome())) {
+                        lastSummary.setIncome(String.valueOf(0.0f));
+                    }
+                    if ("".equals(lastSummary.getExpense())) {
+                        lastSummary.setExpense(String.valueOf(0.0f));
+                    }
+                    lastSummary.setMonth(String.valueOf(lastMonth));
                     lastSummary.setBalance(String.valueOf(Math.abs(expense - income)));
-                    summaries.add(lastSummary);
+                    monthSummaryList.add(lastSummary);
                 }
             }
             if ("收入".equals(type)) {
@@ -104,13 +116,35 @@ public class MyMoneyDb {
             }
             lastSummary = summary;
             lastMonth = tempMonth;
+            if (cursor.isLast()) {
+                if ("".equals(lastSummary.getIncome())) {
+                    lastSummary.setIncome(String.valueOf(0.0f));
+                }
+                if ("".equals(lastSummary.getExpense())) {
+                    lastSummary.setExpense(String.valueOf(0.0f));
+                }
+                lastSummary.setMonth(String.valueOf(lastMonth));
+                lastSummary.setBalance(String.valueOf(Math.abs(expense - income)));
+                monthSummaryList.add(lastSummary);
+            }
         }
+//        if (cursor.getCount() == 1) {
+//            if (lastSummary.getIncome() == null) {
+//                lastSummary.setIncome(String.valueOf(0.0f));
+//            }
+//            if (lastSummary.getExpense() == null) {
+//                lastSummary.setExpense(String.valueOf(0.0f));
+//            }
+//            lastSummary.setMonth(String.valueOf(lastMonth));
+//            lastSummary.setBalance(String.valueOf(Math.abs(expense - income)));
+//            monthSummaryList.add(lastSummary);
+//        }
         cursor.close();
-        return summaries;
+        return monthSummaryList;
     }
 
     public List<IncomeAndExpense> getDayIncomeAndExpense(String year, String month) {
-        List<IncomeAndExpense> lists = new ArrayList<>();
+        daySummaryList.clear();
         String sql = "select i.id,i.type,i.money,i.saveTime,i.remark," +
                 "a.id as accountId,a.accountName,a.balance," +
                 "c.id as categoryId,c.categoryName,c.parentId as categoryParentId " +
@@ -120,9 +154,8 @@ public class MyMoneyDb {
                 "where strftime('%m',i.saveTime) = ? and strftime('%Y',i.saveTime) = ? " +
                 "ORDER BY saveTime desc;";
         Cursor cursor = db.rawQuery(sql, new String[]{month, year});
-        List<Category> categoryChildList = new ArrayList<>();
         while (cursor.moveToNext()) {
-            categoryChildList.clear();
+            List<Category> categoryChildList = new ArrayList<>();
             IncomeAndExpense incomeAndExpense = new IncomeAndExpense();
             Category categoryChild = new Category();
             Category categoryParent;
@@ -153,38 +186,52 @@ public class MyMoneyDb {
             account.setAccountMoney(cursor.getFloat(cursor.getColumnIndex("balance")));
             account.setAccountName(cursor.getString(cursor.getColumnIndex("accountName")));
             incomeAndExpense.setAccount(account);
-
+            daySummaryList.add(incomeAndExpense);
         }
         cursor.close();
-        return lists;
+        return daySummaryList;
     }
 
 
     public long saveIncomeAndExpense(IncomeAndExpense incomeAndExpense) {
         long newRow = 0;
         if (incomeAndExpense != null) {
-            ContentValues values = new ContentValues();
-            values.put("type", incomeAndExpense.getType());
-            values.put("money", incomeAndExpense.getMoney());
-            values.put("saveTime", incomeAndExpense.getSaveTime());
-            values.put("remark", incomeAndExpense.getRemark());
-            values.put("accountId", incomeAndExpense.getAccount().getId());
-            values.put("categoryId", incomeAndExpense.getCategory().getId());
-            newRow = db.insert("income_expense", null, values);
+            ContentValues valuesInsert = new ContentValues();
+            valuesInsert.put("type", incomeAndExpense.getType());
+            valuesInsert.put("money", incomeAndExpense.getMoney());
+            valuesInsert.put("saveTime", incomeAndExpense.getSaveTime());
+            valuesInsert.put("remark", incomeAndExpense.getRemark());
+            valuesInsert.put("updateTime", incomeAndExpense.getUpdateTime());
+            valuesInsert.put("accountId", incomeAndExpense.getAccount().getId());
+            valuesInsert.put("categoryId", incomeAndExpense.getCategory().getId());
+            ContentValues valuesUpdate = new ContentValues();
+            db.beginTransaction();
+            try {
+                if ("支出".equals(incomeAndExpense.getType())) {
+                    valuesUpdate.put("balance", incomeAndExpense.getAccount().getAccountMoney() - incomeAndExpense.getMoney());
+                    newRow = db.insert("income_expense", null, valuesInsert);
+                    db.update("account", valuesUpdate, "id = ?", new String[]{String.valueOf(incomeAndExpense.getAccount().getId())});
+                    db.setTransactionSuccessful();
+                } else if ("收入".equals(incomeAndExpense.getType())) {
+                    valuesUpdate.put("balance", incomeAndExpense.getAccount().getAccountMoney() + incomeAndExpense.getMoney());
+                    newRow = db.insert("income_expense", null, valuesInsert);
+                    db.update("account", valuesUpdate, "id = ?", new String[]{String.valueOf(incomeAndExpense.getAccount().getId())});
+                    db.setTransactionSuccessful();
+                }
+            } catch (Exception e) {
+            } finally {
+                db.endTransaction();
+            }
         }
         return newRow;
     }
 
-    private void updateIncomeAndExpense(IncomeAndExpense oldIncomeAndExpense, IncomeAndExpense newIncomeAndExpense) {
-
-        if (oldIncomeAndExpense.toString().equals(newIncomeAndExpense.toString())) {
-            return;
-        }
-        if (oldIncomeAndExpense != null && newIncomeAndExpense != null) {
+    public void updateIncomeAndExpense(IncomeAndExpense newIncomeAndExpense) {
+        if(newIncomeAndExpense!=null){
             ContentValues values = new ContentValues();
             values.put("money", newIncomeAndExpense.getMoney());
             values.put("saveTime", newIncomeAndExpense.getSaveTime());
-            values.put("updateTime", newIncomeAndExpense.getSaveTime());
+            values.put("updateTime", newIncomeAndExpense.getUpdateTime());
             values.put("accountId", newIncomeAndExpense.getAccount().getId());
             values.put("categoryId", newIncomeAndExpense.getCategory().getId());
             db.update("income_expense", values, "id = ?", new String[]{String.valueOf(newIncomeAndExpense.getId())});
@@ -194,8 +241,7 @@ public class MyMoneyDb {
     //根据parentId查找parentCategory
     public Category getCategoryById(int id) {
         Category category = new Category();
-        String sql = "select * from category where id = " + id;
-        Cursor cursor = db.query("category", null, "where id = ?", new String[]{String.valueOf(id)}, null, null, null);
+        Cursor cursor = db.query("category", null, "id = ?", new String[]{String.valueOf(id)}, null, null, null);
         while (cursor.moveToNext()) {
             category.setId(cursor.getInt(cursor.getColumnIndex("id")));
             category.setType(cursor.getString(cursor.getColumnIndex("type")));
@@ -207,18 +253,18 @@ public class MyMoneyDb {
 
     public List<Category> getMainCategory(String type) {
 
-        List<Category> categoryList ;
-        Cursor cursor ;
-        if(!"".equals(type)){
+        List<Category> categoryList;
+        Cursor cursor;
+        if (!"".equals(type)) {
             cursor = db.query("category", null, "type = ? and parentId is ?", new String[]{type}, null, null, null);
-            if("收入".equals(type)){
+            if ("收入".equals(type)) {
                 categoryIncomeList.clear();
                 categoryList = categoryIncomeList;
-            }else {
+            } else {
                 categoryExpenseList.clear();
                 categoryList = categoryExpenseList;
             }
-        }else{
+        } else {
             cursor = db.query("category", null, "parentId is ?", new String[]{}, null, null, null);
             categoryList = new ArrayList<>();
         }
@@ -258,12 +304,13 @@ public class MyMoneyDb {
         return categoryMainList;
     }
 
-    public List<String> getAllCategoryName(){
+    public List<String> getAllCategoryName() {
         List<String> names = new ArrayList<>();
-        Cursor cursor = db.query("category",new String[]{"categoryName"},null,null,null,null,null);
-        while (cursor.moveToNext()){
+        Cursor cursor = db.query("category", new String[]{"categoryName"}, null, null, null, null, null);
+        while (cursor.moveToNext()) {
             names.add(cursor.getString(cursor.getColumnIndex("categoryName")));
         }
+        cursor.close();
         return names;
     }
 
@@ -272,6 +319,7 @@ public class MyMoneyDb {
      * 1.只插入父分类
      * 2.只插入子分类
      * 3.父分类和子分类一起插入
+     *
      * @param category
      */
     public void insertCategory(Category category) {
@@ -298,6 +346,26 @@ public class MyMoneyDb {
                     }
                 }
             }
+        }
+    }
+
+    public void updateCategory(Category category) {
+        if (category != null) {
+            ContentValues values = new ContentValues();
+            values.put("type", category.getType());
+            values.put("categoryName", category.getName());
+            values.put("updateTime", category.getUpdateTime());
+            //修改子类别时 parentId 不等于0
+            if (category.getParentId() != 0) {
+                values.put("parentId", category.getParentId());
+            }
+            db.update("category", values, "id = ?", new String[]{String.valueOf(category.getId())});
+        }
+    }
+
+    public void deleteCategory(Category category) {
+        if (category != null) {
+            db.delete("category", "id = ?", new String[]{String.valueOf(category.getId())});
         }
     }
 
@@ -333,6 +401,49 @@ public class MyMoneyDb {
             } catch (Exception e) {
             }
         }
+    }
 
+
+    public List<Account> getAllAccount() {
+        accountList.clear();
+        Cursor cursor = db.query("account", null, null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            Account account = new Account();
+            account.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            account.setAccountName(cursor.getString(cursor.getColumnIndex("accountName")));
+            account.setAccountMoney(cursor.getFloat(cursor.getColumnIndex("balance")));
+            account.setUpdateTime(cursor.getString(cursor.getColumnIndex("updateTime")));
+            account.setSyncTime(cursor.getString(cursor.getColumnIndex("syncTime")));
+            accountList.add(account);
+        }
+        cursor.close();
+        return accountList;
+    }
+
+
+    public void insertAccount(Account account) {
+        if (account != null) {
+            ContentValues values = new ContentValues();
+            values.put("accountName", account.getAccountName());
+            values.put("balance", account.getAccountMoney());
+            values.put("updateTime", account.getUpdateTime());
+            db.insert("account", null, values);
+        }
+    }
+
+    public void updateAccount(Account account) {
+        if (account != null) {
+            ContentValues values = new ContentValues();
+            values.put("accountName", account.getAccountName());
+            values.put("balance", account.getAccountMoney());
+            values.put("updateTime", account.getUpdateTime());
+            db.update("account", values, "id = ?", new String[]{String.valueOf(account.getId())});
+        }
+    }
+
+    public void deleteAccount(Account account) {
+        if (account != null) {
+            db.delete("account", "id = ?", new String[]{String.valueOf(account.getId())});
+        }
     }
 }

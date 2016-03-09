@@ -9,7 +9,7 @@ import java.util.Date;
 public class TimeUtil {
 
     public static String getCurrentTime(String format) {
-        SimpleDateFormat sDateFormat = new SimpleDateFormat("M月d日 H:m");
+        SimpleDateFormat sDateFormat = new SimpleDateFormat(format);
         Date curDate = new Date(System.currentTimeMillis());
         String time = sDateFormat.format(curDate);
         return time;

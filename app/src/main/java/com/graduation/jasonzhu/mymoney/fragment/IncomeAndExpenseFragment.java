@@ -23,6 +23,7 @@ import com.graduation.jasonzhu.mymoney.model.IncomeAndExpense;
 import com.graduation.jasonzhu.mymoney.model.Summary;
 import com.graduation.jasonzhu.mymoney.model.TestData;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
+import com.graduation.jasonzhu.mymoney.util.TimeUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,10 +43,34 @@ public class IncomeAndExpenseFragment extends Fragment {
     private View rootView;
     private Summary yearSummary;
     private List<Summary> groupList = new ArrayList<>();
+    private List<IncomeAndExpense> dayList = new ArrayList<>();
     private List<List<IncomeAndExpense>> childList = new ArrayList<>();
     private MyMoneyDb myMoneyDb;
     private int lastClick = -1;
     private static final String TAG = "TEST";
+
+
+    public Summary getYearSummary(String year) {
+        myMoneyDb = MyMoneyDb.getInstance(getContext());
+        yearSummary = myMoneyDb.getYearIncomeAndExpense(year);
+        return yearSummary;
+    }
+
+    public List<Summary> getGroupList(String year) {
+        myMoneyDb = MyMoneyDb.getInstance(getContext());
+        groupList = myMoneyDb.getMonthIncomeAndExpense(year);
+        return groupList;
+    }
+
+    public List<IncomeAndExpense> getDayList(String year, String month) {
+        myMoneyDb = MyMoneyDb.getInstance(getContext());
+        dayList = myMoneyDb.getDayIncomeAndExpense(year, month);
+        return dayList;
+    }
+
+    public List<List<IncomeAndExpense>> getChildList() {
+        return childList;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -63,10 +88,10 @@ public class IncomeAndExpenseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "IncomeAndExpenseFragment onCreateView");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
-        Date date = new Date();
-        String time = dateFormat.format(date);
-        getData(time.split("-"));
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+//        Date date = new Date();
+//        String time = dateFormat.format(date);
+        getData(TimeUtil.getCurrentTime("yyyy-M").split("-"));
         initView();
         expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
@@ -97,17 +122,17 @@ public class IncomeAndExpenseFragment extends Fragment {
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                switch (TestData.getIncomeAndExpenseList().get(groupPosition).get(childPosition).getType()) {
+                Intent intent = new Intent(getActivity(), EditIncomeActivity.class);
+                switch (childList.get(groupPosition).get(childPosition).getType()) {
                     case "收入":
-                        Intent intent = new Intent(getActivity(), EditIncomeActivity.class);
-                        intent.putExtra("income_data", TestData.getIncomeAndExpenseList().get(groupPosition).get(childPosition));
+                        intent.putExtra("data", childList.get(groupPosition).get(childPosition));
                         startActivity(intent);
                         break;
                     case "支出":
-                        Intent intent2 = new Intent(getActivity(), EditExpenseActivity.class);
-                        intent2.putExtra("expense_data", TestData.getIncomeAndExpenseList().get(groupPosition).get(childPosition));
-                        startActivity(intent2);
+                        intent.putExtra("data", childList.get(groupPosition).get(childPosition));
+                        startActivity(intent);
                         break;
+
                 }
                 return false;
             }
@@ -116,9 +141,9 @@ public class IncomeAndExpenseFragment extends Fragment {
     }
 
     private void initView() {
-        rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.income_expense_statistics, null);
+        rootView = LayoutInflater.from(getContext()).inflate(R.layout.income_expense_statistics, null);
         expandableListView = (ExpandableListView) rootView.findViewById(R.id.mm_main_expandlv);
-        dayAccountExpandLvAdapter = new DayAccountExpandLvAdapter(MyApplication.getContext()
+        dayAccountExpandLvAdapter = new DayAccountExpandLvAdapter(getContext()
                 , groupList, childList);
         expandableListView.setAdapter(dayAccountExpandLvAdapter);
         //去除箭头
@@ -147,6 +172,11 @@ public class IncomeAndExpenseFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "IncomeAndExpenseFragment onResume");
+        getData(TimeUtil.getCurrentTime("yyyy-MM").split("-"));
+        yearExpenseTv.setText(yearSummary.getExpense());
+        yearIncomeTv.setText(yearSummary.getIncome());
+        yearBalanceTv.setText(yearSummary.getBalance());
+        dayAccountExpandLvAdapter.notifyDataSetChanged();
 
     }
 
@@ -184,16 +214,22 @@ public class IncomeAndExpenseFragment extends Fragment {
     public void getData(String[] time) {
         myMoneyDb = MyMoneyDb.getInstance(getContext());
         //查询年度总收入
-        yearSummary = myMoneyDb.getYearIncomeAndExpense(time[0]);
-        if (!"0.0".equals(yearSummary.getExpense()) && !"0.0".equals(yearSummary.getIncome())) {
+        getYearSummary(time[0]);
+        if (!"0.0".equals(yearSummary.getExpense()) || !"0.0".equals(yearSummary.getIncome()) ||
+                !"0.0".equals(yearSummary.getBalance())) {
             //查询月总收入
-            groupList = myMoneyDb.getMonthIncomeAndExpense(time[0]);
+            getGroupList(time[0]);
             //查询月明细
-            //  Log.d("DATA",Integer.valueOf(time[1]).toString());
-            for (int i = Integer.valueOf(time[1]); i > 0; i--) {
-                List<IncomeAndExpense> list = myMoneyDb.getDayIncomeAndExpense(time[0], time[1]);
-                if (list.size() > 0) {
-                    childList.add(list);
+            for (int i = 0; i < groupList.size(); i++) {
+                String month = "";
+                if (1 < Integer.valueOf(groupList.get(i).getMonth()) && Integer.valueOf(groupList.get(i).getMonth()) < 10) {
+                    month = "0" + Integer.valueOf(groupList.get(i).getMonth());
+                } else {
+                    month = groupList.get(i).getMonth();
+                }
+                getDayList(time[0], month);
+                if (dayList.size() > 0) {
+                    childList.add(dayList);
                 }
             }
         }

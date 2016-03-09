@@ -31,7 +31,7 @@ public class DoubleListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_category);
         initView();
-        categoryMainAdapter = new CategoryMainAdapter(this, TestData.getMainCategory());
+      //  categoryMainAdapter = new CategoryMainAdapter(this, TestData.getMainCategory());
         mainList.setAdapter(categoryMainAdapter);
         mainList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         mainList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -57,7 +57,7 @@ public class DoubleListActivity extends AppCompatActivity {
     }
 
     private void initAdapter(List<String> values) {
-        categorySubAdapter = new CategorySubAdapter(this,values);
+      //  categorySubAdapter = new CategorySubAdapter(this,values);
         subList.setAdapter(categorySubAdapter);
         categorySubAdapter.notifyDataSetChanged();
     }

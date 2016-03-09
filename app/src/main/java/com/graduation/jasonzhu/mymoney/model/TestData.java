@@ -67,7 +67,6 @@ public class TestData {
 
         List<Category> categoryChildList7 = new ArrayList<>();
         categoryChildList7.add(new Category("收入","工资",time));
-        categoryChildList7.add(new Category("收入","房租",time));
         categoryChildList7.add(new Category("收入","奖金",time));
         categoryChildList7.add(new Category("收入","投资",time));
         categoryChildList7.add(new Category("收入","兼职",time));

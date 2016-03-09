@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.graduation.jasonzhu.mymoney.R;
+import com.graduation.jasonzhu.mymoney.model.Category;
 
 import java.util.List;
 
@@ -16,12 +17,11 @@ import java.util.List;
  */
 public class CategorySubAdapter extends BaseAdapter{
     private Context context;
-    private String[] text_list;
-    private List<String> subList;
+    private List<Category> subList;
     private int mPosition = 0;
-    Holder hold;
 
-    public CategorySubAdapter(Context context, List<String> subList) {
+
+    public CategorySubAdapter(Context context, List<Category> subList) {
         this.context = context;
         this.subList = subList;
     }
@@ -41,19 +41,20 @@ public class CategorySubAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
+        Holder hold;
         if (convertView == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.item_category_sublist,null);
+            view = LayoutInflater.from(context).inflate(R.layout.item_category_sublist, null);
             hold = new Holder(view);
             view.setTag(hold);
         } else {
             view = convertView;
             hold = (Holder) view.getTag();
         }
-        hold.txt.setText(subList.get(position));
-        hold.txt.setTextColor(0xFF666666);
-        if (mPosition == position) {
-            hold.txt.setTextColor(0xFFFF8C00);
-        }
+        hold.txt.setText(subList.get(position).getName());
+//        hold.txt.setTextColor(0xFF666666);
+//        if (mPosition == position) {
+//            hold.txt.setTextColor(0xFFFF8C00);
+//        }
         return view;
     }
 

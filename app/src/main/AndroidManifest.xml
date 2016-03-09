@@ -20,7 +20,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.AddRecordActivity" />
-        <activity android:name=".activity.DoubleListActivity" />
         <activity android:name=".activity.EditExpenseActivity" />
         <activity android:name=".activity.EditIncomeActivity" />
         <activity android:name=".activity.EditExchangeActivity" />
