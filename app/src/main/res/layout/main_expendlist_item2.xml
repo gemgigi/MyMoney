@@ -6,7 +6,7 @@
     android:paddingBottom="8dp">
 
     <TextView
-        android:id="@+id/mm_main_sublist_day_tv"
+        android:id="@+id/mm_main_sublist_day2_tv"
         android:layout_width="0dp"
         android:layout_weight="0.2"
         android:layout_height="wrap_content"
@@ -14,24 +14,23 @@
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
         android:text="8日"
-       />
-    
-
+        />
 
     <TextView
-        android:id="@+id/mm_main_sublist_category_tv"
+        android:id="@+id/mm_main_sublist_account_tv"
         android:layout_width="0dp"
-        android:layout_weight="0.3"
+        android:layout_weight="0.4"
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
-        android:text="早餐"
+        android:text="现金 > 支付宝"
         android:gravity="center"
+        android:singleLine="true"
         />
 
     <TextView
-        android:id="@+id/mm_main_sublist_money_tv"
+        android:id="@+id/mm_main_sublist_money2_tv"
         android:layout_width="0dp"
         android:layout_weight="0.4"
         android:layout_height="wrap_content"
@@ -42,6 +41,4 @@
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
         />
-
-
 </LinearLayout>

@@ -57,11 +57,11 @@ public class CategoryFragment extends Fragment {
         return allCateogryName;
     }
 
-    public List<Category> getAllCateogrys() {
-        myMoneyDb = MyMoneyDb.getInstance(getContext());
-        allCateogrys = myMoneyDb.getAllCategory("");
-        return allCateogrys;
-    }
+//    public List<Category> getAllCateogrys() {
+//        myMoneyDb = MyMoneyDb.getInstance(getContext());
+//        allCateogrys = myMoneyDb.getAllCategory("");
+//        return allCateogrys;
+//    }
 
     @Override
     public void onAttach(Context context) {
@@ -143,7 +143,7 @@ public class CategoryFragment extends Fragment {
             if("支出".equals(type)){
                 intent.putStringArrayListExtra("categoryList", (ArrayList<String>) getAllCateogryName());
             }
-            startActivity(intent);
+            startActivityForResult(intent,1);
         }
         return true;
     }

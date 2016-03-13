@@ -110,6 +110,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                 }
                 myMoneyDb.insertCategory(category);
                 Toast.makeText(AddCategoryActivity.this,"添加成功！",Toast.LENGTH_SHORT).show();
+                setResult(3);
                 finish();
             }
         });

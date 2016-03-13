@@ -15,6 +15,8 @@ public class IncomeAndExpense implements Serializable {
     private String remark;
     private Account account;
     private Category category;
+    private Transfer transfer;
+    private int recordType;
 
     @Override
     public String toString() {
@@ -112,5 +114,21 @@ public class IncomeAndExpense implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Transfer getTransfer() {
+        return transfer;
+    }
+
+    public void setTransfer(Transfer transfer) {
+        this.transfer = transfer;
+    }
+
+    public int getRecordType() {
+        return recordType;
+    }
+
+    public void setRecordType(int recordType) {
+        this.recordType = recordType;
     }
 }

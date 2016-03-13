@@ -18,6 +18,7 @@ import com.graduation.jasonzhu.mymoney.R;
 import com.graduation.jasonzhu.mymoney.activity.EditCategoryActivity;
 import com.graduation.jasonzhu.mymoney.activity.EditExpenseActivity;
 import com.graduation.jasonzhu.mymoney.activity.EditIncomeActivity;
+import com.graduation.jasonzhu.mymoney.activity.MainActivity;
 import com.graduation.jasonzhu.mymoney.adapter.CategoryExpandLvAdapter;
 import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
 import com.graduation.jasonzhu.mymoney.model.Category;
@@ -37,7 +38,7 @@ public class ExpenseCategoryFragment extends Fragment {
     private ExpandableListView expandableListView;
     private CategoryExpandLvAdapter categoryExpandLvAdapter;
     private int lastClick = -1;
-    private List<Category> categoryList ;
+    private List<Category> categoryList;
     private MyMoneyDb myMoneyDb;
 
 
@@ -81,7 +82,7 @@ public class ExpenseCategoryFragment extends Fragment {
                     Intent intent = new Intent(getActivity(), EditCategoryActivity.class);
                     intent.putExtra("data", categoryList.get(position));
                     intent.putExtra("type", "一级类别");
-                    startActivity(intent);
+                    startActivityForResult(intent, 1);
                     return true;
                 }
                 return false;
@@ -114,9 +115,9 @@ public class ExpenseCategoryFragment extends Fragment {
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 Intent intent = new Intent(getActivity(), EditCategoryActivity.class);
                 intent.putExtra("data", categoryList.get(groupPosition).getCategoryList().get(childPosition));
-                intent.putExtra("mainCategoryName",categoryList.get(groupPosition).getName());
+                intent.putExtra("mainCategoryName", categoryList.get(groupPosition).getName());
                 intent.putExtra("type", "二级类别");
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 return false;
             }
         });
@@ -148,10 +149,15 @@ public class ExpenseCategoryFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "ExpenseCategoryFragment onResume");
+//        MainActivity mainActivity = (MainActivity) getActivity();
+//        if(mainActivity.isOperateOnCategory()){
         getCategoryList();
         categoryExpandLvAdapter.notifyDataSetChanged();
-
+        //  mainActivity.setIsOperateOnCategory(false);
         Log.d(TAG, "ExpenseCategoryFragment 刷新");
+        //}
+
+
     }
 
     @Override

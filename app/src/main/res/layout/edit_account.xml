@@ -23,7 +23,8 @@
             android:text="88.00"
             android:textColor="@color/colorText"
             android:textSize="36sp"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:clickable="true"/>
     </android.support.design.widget.AppBarLayout>
 
     <LinearLayout

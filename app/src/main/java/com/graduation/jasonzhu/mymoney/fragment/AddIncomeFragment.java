@@ -118,13 +118,13 @@ public class AddIncomeFragment extends Fragment {
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         if (0 <= monthOfYear && monthOfYear < 9) {
                             if (0 < dayOfMonth && dayOfMonth < 10) {
-                                selectedTime = year + "-" + 0 + (monthOfYear + 1) + "-" + "0" + dayOfMonth + " " + TimeUtil.getCurrentTime("H:m");
+                                selectedTime = year + "-" + 0 + (monthOfYear + 1) + "-" + "0" + dayOfMonth + " " + TimeUtil.getCurrentTime("HH:mm");
                             } else {
-                                selectedTime = year + "-" + 0 + (monthOfYear + 1) + "-" + dayOfMonth + " " + TimeUtil.getCurrentTime("H:m");
+                                selectedTime = year + "-" + 0 + (monthOfYear + 1) + "-" + dayOfMonth + " " + TimeUtil.getCurrentTime("HH:mm");
                             }
                         } else {
                             if (0 < dayOfMonth && dayOfMonth < 10) {
-                                selectedTime = year + "-" + (monthOfYear + 1) + "-" + "0" + dayOfMonth + " " + TimeUtil.getCurrentTime("H:m");
+                                selectedTime = year + "-" + (monthOfYear + 1) + "-" + "0" + dayOfMonth + " " + TimeUtil.getCurrentTime("HH:mm");
                             } else {
                                 selectedTime = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth + " " + TimeUtil.getCurrentTime("H:m");
                             }
@@ -173,6 +173,7 @@ public class AddIncomeFragment extends Fragment {
                 incomeAndExpense.setUpdateTime(TimeUtil.getCurrentTime("yyyy-MM-dd HH:mm"));
                 myMoneyDb = MyMoneyDb.getInstance(getContext());
                 myMoneyDb.saveIncomeAndExpense(incomeAndExpense);
+                getActivity().setResult(1,getActivity().getIntent());
                 getActivity().finish();
             }
         });

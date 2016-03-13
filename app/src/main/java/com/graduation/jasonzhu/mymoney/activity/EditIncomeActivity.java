@@ -47,6 +47,7 @@ public class EditIncomeActivity extends AppCompatActivity {
     private AccountSpinnerAdapter spinnerAdapter;
     private String type;
     private IncomeAndExpense targetIncomeAndExpanse;
+    private IncomeAndExpense newIncomeAndExpense;
     private MyMoneyDb myMoneyDb;
     private List<Category> mainCategoryList;
     private List<Category> subCategoryList;
@@ -156,29 +157,31 @@ public class EditIncomeActivity extends AppCompatActivity {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                newIncomeAndExpense = new IncomeAndExpense();
                 if (categoryListView.getSelectedCategory() != null) {
-                    targetIncomeAndExpanse.setCategory(categoryListView.getSelectedCategory());
-//                    Toast.makeText(EditIncomeActivity.this, "categoryId = " +
-//                            categoryListView.getSelectedCategory().getId(), Toast.LENGTH_SHORT).show();
-                }else {
-                    targetIncomeAndExpanse.setCategory(targetIncomeAndExpanse.getCategory().getCategoryList().get(0));
+                    newIncomeAndExpense.setCategory(categoryListView.getSelectedCategory());
+                } else {
+                    newIncomeAndExpense.setCategory(targetIncomeAndExpanse.getCategory().getCategoryList().get(0));
                 }
                 if (selectedAccount != null) {
-                    targetIncomeAndExpanse.setAccount(selectedAccount);
+                    newIncomeAndExpense.setAccount(selectedAccount);
+                } else {
+                    newIncomeAndExpense.setAccount(targetIncomeAndExpanse.getAccount());
                 }
                 if (selectedTime != null) {
-                    targetIncomeAndExpanse.setSaveTime(dateTv.getText().toString());
+                    newIncomeAndExpense.setSaveTime(dateTv.getText().toString());
+                } else {
+                    newIncomeAndExpense.setSaveTime(targetIncomeAndExpanse.getSaveTime());
                 }
                 String money = moneyTv.getText().toString();
                 String remark = remarkEt.getText().toString();
-                targetIncomeAndExpanse.setMoney(Float.valueOf(money));
-                targetIncomeAndExpanse.setRemark(remark);
-                targetIncomeAndExpanse.setUpdateTime(TimeUtil.getCurrentTime("yyyy-MM-dd HH:mm"));
+                newIncomeAndExpense.setId(targetIncomeAndExpanse.getId());
+                newIncomeAndExpense.setMoney(Float.valueOf(money));
+                newIncomeAndExpense.setRemark(remark);
+                newIncomeAndExpense.setUpdateTime(TimeUtil.getCurrentTime("yyyy-MM-dd HH:mm"));
                 myMoneyDb = MyMoneyDb.getInstance(EditIncomeActivity.this);
-                //更新income_expense表
-               Toast.makeText(EditIncomeActivity.this, "categoryId = " +
-                        targetIncomeAndExpanse.getCategory().getId(), Toast.LENGTH_SHORT).show();
-                myMoneyDb.updateIncomeAndExpense(targetIncomeAndExpanse);
+                myMoneyDb.updateIncomeAndExpense(targetIncomeAndExpanse, newIncomeAndExpense);
+                setResult(1, getIntent());
                 finish();
             }
         });
@@ -209,8 +212,7 @@ public class EditIncomeActivity extends AppCompatActivity {
     }
 
     public void setSpinnerItemSelectedByValue(String value) {
-        int k = spinnerAdapter.getCount();
-        for (int i = 0; i < k; i++) {
+        for (int i = 0; i < spinnerAdapter.getCount(); i++) {
             Account account = (Account) spinnerAdapter.getItem(i);
             if (value.equals(account.getAccountName())) {
                 accountSpinner.setSelection(i, true);// 默认选中项
@@ -234,7 +236,25 @@ public class EditIncomeActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.action_delete:
-                Toast.makeText(this, "EditIncome", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditIncomeActivity.this)
+                        .setTitle("删除提示")
+                        .setMessage("是否删除该记录")
+                        .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                myMoneyDb = MyMoneyDb.getInstance(EditIncomeActivity.this);
+                                myMoneyDb.deleteIncomeAndExpense(targetIncomeAndExpanse);
+                                Toast.makeText(EditIncomeActivity.this, "删除成功！", Toast.LENGTH_SHORT).show();
+                                setResult(1, getIntent());
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                builder.show();
             default:
                 break;
         }

@@ -34,14 +34,14 @@ import com.graduation.jasonzhu.mymoney.fragment.AccountFragment;
 import com.graduation.jasonzhu.mymoney.fragment.CategoryFragment;
 import com.graduation.jasonzhu.mymoney.fragment.IncomeAndExpenseFragment;
 import com.graduation.jasonzhu.mymoney.model.TestData;
-import com.graduation.jasonzhu.mymoney.util.LoadDataCallBackListener;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
+import com.graduation.jasonzhu.mymoney.util.TimeUtil;
+
+import java.sql.Time;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private ExpandableListView expandableListView;
-    private DayAccountExpandLvAdapter dayAccountExpandLvAdapter;
     private Toolbar toolbar;
     private FloatingActionButton fab;
     private DrawerLayout drawer;
@@ -55,11 +55,50 @@ public class MainActivity extends AppCompatActivity
     private MyMoneyDb myMoneyDb;
     private ProgressDialog progressDialog;
     private SharedPreferences sp;
+    private static final int INCOME_EXPENSE_RESULT = 1;
+    private static final int ACCOUNT_RESULT = 2;
+    private static final int CATEGORY_RESULT = 3;
+    private boolean isOperateOnIncomeExpense = false;
+    private boolean isOperateOnAccount = false;
+    private boolean isOperateOnCategory = false;
+    private OperateListener operateListener;
+
+
+    public interface OperateListener {
+        void onOperate(boolean value);
+    }
+
+
+    public void setIsOperateOnIncomeExpense(boolean isOperateOnIncomeExpense) {
+        this.isOperateOnIncomeExpense = isOperateOnIncomeExpense;
+    }
+
+    public void setIsOperateOnAccount(boolean isOperateOnAccount) {
+        this.isOperateOnAccount = isOperateOnAccount;
+    }
+
+    public void setIsOperateOnCategory(boolean isOperateOnCategory) {
+        this.isOperateOnCategory = isOperateOnCategory;
+    }
+
+    public boolean isOperateOnIncomeExpense() {
+        return isOperateOnIncomeExpense;
+    }
+
+    public boolean isOperateOnAccount() {
+        return isOperateOnAccount;
+    }
+
+    public boolean isOperateOnCategory() {
+        return isOperateOnCategory;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         initView();
         sp = getPreferences(Context.MODE_PRIVATE);
         isFirstLoad = sp.getBoolean("isFirstLoad", true);
@@ -78,7 +117,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, AddRecordActivity.class);
-                startActivity(intent);
+                //  startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -184,14 +224,21 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (resultCode) {
+            case INCOME_EXPENSE_RESULT:
+                Log.d("TAG", "main from income_expense");
+                isOperateOnIncomeExpense = true;
+                break;
+            case ACCOUNT_RESULT:
+                Log.d("TAG", "main account");
+                isOperateOnAccount = true;
+                break;
+            case CATEGORY_RESULT:
+                Log.d("TAG", "main from category");
+                isOperateOnCategory = true;
+                break;
 
-        switch (requestCode) {
-            case 1:
-                if (resultCode == 1) {
-                    Log.d("TAG", "返回主Activity");
-                }
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public class LoadData extends AsyncTask<Void, Integer, Void> {

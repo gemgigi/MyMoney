@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.graduation.jasonzhu.mymoney.R;
 import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
 import com.graduation.jasonzhu.mymoney.model.Account;
+import com.graduation.jasonzhu.mymoney.util.CalculatorView;
 import com.graduation.jasonzhu.mymoney.util.TimeUtil;
 
 import java.util.ArrayList;
@@ -53,6 +54,31 @@ public class EditAccountActivity extends AppCompatActivity {
 //        Intent intent = new Intent();
 //        intent.putExtra("type", "account");
 //       // setResult(RESULT_OK);
+        balenceTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final CalculatorView calculatorView = new CalculatorView();
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditAccountActivity.this) {
+                    @Override
+                    public AlertDialog show() {
+                        setView(calculatorView.getCalculatoView(EditAccountActivity.this));
+                        return super.show();
+                    }
+                };
+                builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        balenceTv.setText(calculatorView.getResultTv().getText());
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                builder.show();
+            }
+        });
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,18 +88,19 @@ public class EditAccountActivity extends AppCompatActivity {
                     Toast.makeText(EditAccountActivity.this, "账户名称不能为空！", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (accountNameList.size() > 0) {
-                    if (accountNameList.contains(name)) {
-                        Toast.makeText(EditAccountActivity.this, "对不起，账户名称已存在！", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                }
+//                if (accountNameList.size() > 0) {
+//                    if (accountNameList.contains(name)) {
+//                        Toast.makeText(EditAccountActivity.this, "对不起，账户名称已存在！", Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//                }
                 myMoneyDb = MyMoneyDb.getInstance(EditAccountActivity.this);
                 targetAccount.setAccountMoney(Float.valueOf(balance));
                 targetAccount.setAccountName(name);
                 targetAccount.setUpdateTime(TimeUtil.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
                 myMoneyDb.updateAccount(targetAccount);
                 Toast.makeText(EditAccountActivity.this,"修改成功！",Toast.LENGTH_SHORT).show();
+                setResult(2, getIntent());
                 finish();
             }
         });
@@ -87,7 +114,6 @@ public class EditAccountActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("编辑账户");
         toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white_24dp);
-
         setSupportActionBar(toolbar);
     }
 
@@ -100,7 +126,7 @@ public class EditAccountActivity extends AppCompatActivity {
                 break;
             case R.id.action_delete:
                 AlertDialog.Builder builder = new AlertDialog.Builder(EditAccountActivity.this)
-                        .setTitle("注意！")
+                        .setTitle("删除提示")
                         .setMessage("删除该账户，也会删除其下的流水账")
                         .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                             @Override
@@ -108,6 +134,7 @@ public class EditAccountActivity extends AppCompatActivity {
                                 myMoneyDb = MyMoneyDb.getInstance(EditAccountActivity.this);
                                 myMoneyDb.deleteAccount(targetAccount);
                                 Toast.makeText(EditAccountActivity.this,"删除成功！",Toast.LENGTH_SHORT).show();
+                                setResult(2, getIntent());
                                 finish();
                             }
                         })

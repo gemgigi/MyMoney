@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.graduation.jasonzhu.mymoney.R;
 import com.graduation.jasonzhu.mymoney.activity.AddAccountActivity;
 import com.graduation.jasonzhu.mymoney.activity.EditAccountActivity;
+import com.graduation.jasonzhu.mymoney.activity.MainActivity;
 import com.graduation.jasonzhu.mymoney.adapter.AccountListViewAdapter;
 import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
 import com.graduation.jasonzhu.mymoney.model.Account;
@@ -70,7 +71,7 @@ public class AccountFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), EditAccountActivity.class);
                 intent.putExtra("account",accountList.get(position));
                 intent.putExtra("accountList", (Serializable) accountList);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 // startActivityForResult(intent,REQUEST_CODE);
             }
         });
@@ -106,7 +107,7 @@ public class AccountFragment extends Fragment {
         if (id == R.id.action_account_add) {
             Intent intent = new Intent(getActivity(), AddAccountActivity.class);
             intent.putExtra("accountList", (Serializable) accountList);
-            startActivity(intent);
+            startActivityForResult(intent,1);
         }
         return true;
     }
@@ -127,9 +128,15 @@ public class AccountFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "AccountFragment onResume");
-        getAccountList();
-        balenceTv.setText( getAllBalance());
-        accountListViewAdapter.notifyDataSetChanged();
+//        MainActivity mainActivity = (MainActivity) getActivity();
+//        if(mainActivity.isOperateOnAccount()){
+            getAccountList();
+            balenceTv.setText(getAllBalance());
+            accountListViewAdapter.notifyDataSetChanged();
+//            mainActivity.setIsOperateOnAccount(false);
+//            Log.d(TAG, "AccountFragment 刷新");
+//        }
+
 
 
     }

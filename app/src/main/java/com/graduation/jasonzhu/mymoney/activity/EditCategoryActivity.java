@@ -155,6 +155,7 @@ public class EditCategoryActivity extends AppCompatActivity {
 //                    //执行删除和插入操作
 //                }
                 Toast.makeText(EditCategoryActivity.this,"删除成功！",Toast.LENGTH_SHORT).show();
+                setResult(3);
                 finish();
             }
         });
@@ -220,7 +221,7 @@ public class EditCategoryActivity extends AppCompatActivity {
                 msg = "删除该分类，会删除其下流水账";
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(EditCategoryActivity.this)
-                    .setTitle("注意！")
+                    .setTitle("删除提示")
                     .setMessage(msg)
                     .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                         @Override
@@ -228,6 +229,7 @@ public class EditCategoryActivity extends AppCompatActivity {
                             myMoneyDb = MyMoneyDb.getInstance(EditCategoryActivity.this);
                             myMoneyDb.deleteCategory(targetCategory);
                             Toast.makeText(EditCategoryActivity.this,"删除成功！",Toast.LENGTH_SHORT).show();
+                            setResult(3);
                             finish();
                         }
                     })

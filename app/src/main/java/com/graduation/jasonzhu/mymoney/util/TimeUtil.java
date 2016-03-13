@@ -1,5 +1,8 @@
 package com.graduation.jasonzhu.mymoney.util;
 
+import android.util.Log;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,7 +18,10 @@ public class TimeUtil {
         return time;
     }
 
-
+    public static int formatTime(String time) {
+        int fTime = Integer.valueOf(time.substring(time.indexOf("-")+1, time.length()).replaceAll("[-\\s:]+",""));
+        return fTime;
+    }
 
 
     public static String getMonth(String time) {
@@ -31,7 +37,7 @@ public class TimeUtil {
         String day = "";
         if (time != null && !"".equals(time)) {
             String[] str = time.split("-");
-            day= str[2].substring(0, str[2].indexOf(" "))+"日";
+            day = str[2].substring(0, str[2].indexOf(" ")) + "日";
         }
 
         return day;

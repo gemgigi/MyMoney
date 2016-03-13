@@ -39,7 +39,7 @@ public class EditExpenseActivity extends AppCompatActivity {
         initView();
         Intent intent = getIntent();
         IncomeAndExpense incomeAndExpense = (IncomeAndExpense) intent.getSerializableExtra("expense_data");
-        //Log.d("edit_expense","money = "+incomeAndExpense.getMoney());
+
         moneyEt.setText(String.valueOf(incomeAndExpense.getMoney()));
         setSpinnerItemSelectedByValue(incomeAndExpense.getAccount().getAccountName());
         timeTv.setText(incomeAndExpense.getSaveTime());

@@ -42,6 +42,7 @@ public class MyMoneyOpenHelper extends SQLiteOpenHelper {
             "toAccount integer," +
             "money real," +
             "transferTime text," +
+            "updateTime text," +
             "syncTime text," +
             "constraint fk_transfer_account1 foreign key(fromAccount) references account(id) on delete cascade on update cascade," +
             "constraint fk_transfer_account2 foreign key(toAccount) references account(id) on delete cascade on update cascade);";

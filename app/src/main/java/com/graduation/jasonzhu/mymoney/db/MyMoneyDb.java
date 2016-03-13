@@ -12,7 +12,10 @@ import com.graduation.jasonzhu.mymoney.model.Category;
 import com.graduation.jasonzhu.mymoney.model.IncomeAndExpense;
 import com.graduation.jasonzhu.mymoney.model.Summary;
 import com.graduation.jasonzhu.mymoney.model.TestData;
+import com.graduation.jasonzhu.mymoney.model.Transfer;
 import com.graduation.jasonzhu.mymoney.util.LoadDataCallBackListener;
+import com.graduation.jasonzhu.mymoney.util.LogUtil;
+import com.graduation.jasonzhu.mymoney.util.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +33,9 @@ public class MyMoneyDb {
     private List<Category> categoryIncomeList = new ArrayList<>();
     private List<Category> categoryExpenseList = new ArrayList<>();
     private List<Account> accountList = new ArrayList<>();
-
     private List<Summary> monthSummaryList = new ArrayList<>();
-    private List<IncomeAndExpense> daySummaryList = new ArrayList<>();
+    private List<Transfer> transferList = new ArrayList<>();
+
 
     public MyMoneyDb(Context context) {
         openHelper = new MyMoneyOpenHelper(context, DB_NAME, null, VERSION);
@@ -96,10 +99,10 @@ public class MyMoneyDb {
             if (lastMonth != tempMonth) {
                 summary = new Summary();
                 if (lastSummary != null) {
-                    if ("".equals(lastSummary.getIncome())) {
+                    if (lastSummary.getIncome() == null) {
                         lastSummary.setIncome(String.valueOf(0.0f));
                     }
-                    if ("".equals(lastSummary.getExpense())) {
+                    if (lastSummary.getExpense() == null) {
                         lastSummary.setExpense(String.valueOf(0.0f));
                     }
                     lastSummary.setMonth(String.valueOf(lastMonth));
@@ -117,10 +120,10 @@ public class MyMoneyDb {
             lastSummary = summary;
             lastMonth = tempMonth;
             if (cursor.isLast()) {
-                if ("".equals(lastSummary.getIncome())) {
+                if (lastSummary.getIncome() == null) {
                     lastSummary.setIncome(String.valueOf(0.0f));
                 }
-                if ("".equals(lastSummary.getExpense())) {
+                if (lastSummary.getExpense() == null) {
                     lastSummary.setExpense(String.valueOf(0.0f));
                 }
                 lastSummary.setMonth(String.valueOf(lastMonth));
@@ -128,24 +131,13 @@ public class MyMoneyDb {
                 monthSummaryList.add(lastSummary);
             }
         }
-//        if (cursor.getCount() == 1) {
-//            if (lastSummary.getIncome() == null) {
-//                lastSummary.setIncome(String.valueOf(0.0f));
-//            }
-//            if (lastSummary.getExpense() == null) {
-//                lastSummary.setExpense(String.valueOf(0.0f));
-//            }
-//            lastSummary.setMonth(String.valueOf(lastMonth));
-//            lastSummary.setBalance(String.valueOf(Math.abs(expense - income)));
-//            monthSummaryList.add(lastSummary);
-//        }
         cursor.close();
         return monthSummaryList;
     }
 
     public List<IncomeAndExpense> getDayIncomeAndExpense(String year, String month) {
-        daySummaryList.clear();
-        String sql = "select i.id,i.type,i.money,i.saveTime,i.remark," +
+        List<IncomeAndExpense> daySummaryList = new ArrayList<>();
+        String sql = "select i.id,i.type,i.money,i.saveTime,i.remark,i.updateTime," +
                 "a.id as accountId,a.accountName,a.balance," +
                 "c.id as categoryId,c.categoryName,c.parentId as categoryParentId " +
                 "from income_expense i " +
@@ -164,6 +156,8 @@ public class MyMoneyDb {
             incomeAndExpense.setType(cursor.getString(cursor.getColumnIndex("type")));
             incomeAndExpense.setMoney(cursor.getFloat(cursor.getColumnIndex("money")));
             incomeAndExpense.setSaveTime(cursor.getString(cursor.getColumnIndex("saveTime")));
+            incomeAndExpense.setUpdateTime(cursor.getString(cursor.getColumnIndex("updateTime")));
+            incomeAndExpense.setRecordType(0);
             //如果该分类是子分类
             int parentId = cursor.getInt(cursor.getColumnIndex("categoryParentId"));
             if (parentId > 0) {
@@ -226,15 +220,76 @@ public class MyMoneyDb {
         return newRow;
     }
 
-    public void updateIncomeAndExpense(IncomeAndExpense newIncomeAndExpense) {
-        if(newIncomeAndExpense!=null){
+
+    public void updateIncomeAndExpense(IncomeAndExpense oldIncomeAndExpense, IncomeAndExpense newIncomeAndExpense) {
+        if (newIncomeAndExpense != null && oldIncomeAndExpense != null) {
             ContentValues values = new ContentValues();
             values.put("money", newIncomeAndExpense.getMoney());
             values.put("saveTime", newIncomeAndExpense.getSaveTime());
             values.put("updateTime", newIncomeAndExpense.getUpdateTime());
             values.put("accountId", newIncomeAndExpense.getAccount().getId());
             values.put("categoryId", newIncomeAndExpense.getCategory().getId());
-            db.update("income_expense", values, "id = ?", new String[]{String.valueOf(newIncomeAndExpense.getId())});
+            values.put("remark", newIncomeAndExpense.getRemark());
+            db.beginTransaction();
+            try {
+                db.update("income_expense", values, "id = ?", new String[]{String.valueOf(newIncomeAndExpense.getId())});
+                ContentValues valuesOld = new ContentValues();
+                ContentValues valuesNew = new ContentValues();
+                if (!oldIncomeAndExpense.getAccount().getAccountName().equals(newIncomeAndExpense.getAccount().getAccountName())) {
+                    if ("支出".equals(oldIncomeAndExpense.getType())) {
+                        valuesOld.put("balance", oldIncomeAndExpense.getAccount().getAccountMoney() + oldIncomeAndExpense.getMoney());
+                        valuesOld.put("updateTime", newIncomeAndExpense.getUpdateTime());
+                        valuesNew.put("balance", newIncomeAndExpense.getAccount().getAccountMoney() - newIncomeAndExpense.getMoney());
+                        valuesNew.put("updateTime", newIncomeAndExpense.getUpdateTime());
+                    } else if ("收入".equals(oldIncomeAndExpense.getType())) {
+                        valuesOld.put("balance", oldIncomeAndExpense.getAccount().getAccountMoney() - oldIncomeAndExpense.getMoney());
+                        valuesOld.put("updateTime", newIncomeAndExpense.getUpdateTime());
+                        valuesNew.put("balance", newIncomeAndExpense.getAccount().getAccountMoney() + newIncomeAndExpense.getMoney());
+                        valuesNew.put("updateTime", newIncomeAndExpense.getUpdateTime());
+                    }
+                    db.update("account", valuesOld, "id = ?", new String[]{String.valueOf(oldIncomeAndExpense.getAccount().getId())});
+                    db.update("account", valuesNew, "id = ?", new String[]{String.valueOf(newIncomeAndExpense.getAccount().getId())});
+                    valuesOld.clear();
+                    valuesNew.clear();
+                } else {
+                    if ("支出".equals(oldIncomeAndExpense.getType())) {
+                        valuesNew.put("balance", oldIncomeAndExpense.getAccount().getAccountMoney() + oldIncomeAndExpense.getMoney() - newIncomeAndExpense.getMoney());
+                        valuesNew.put("updateTime", newIncomeAndExpense.getUpdateTime());
+                    } else if ("收入".equals(oldIncomeAndExpense.getType())) {
+                        valuesNew.put("balance", oldIncomeAndExpense.getAccount().getAccountMoney() - oldIncomeAndExpense.getMoney() + newIncomeAndExpense.getMoney());
+                        valuesNew.put("updateTime", newIncomeAndExpense.getUpdateTime());
+                    }
+                    db.update("account", valuesNew, "id = ?", new String[]{String.valueOf(oldIncomeAndExpense.getAccount().getId())});
+                }
+                db.setTransactionSuccessful();
+            } catch (Exception e) {
+
+            } finally {
+                db.endTransaction();
+            }
+        }
+    }
+
+    public void deleteIncomeAndExpense(IncomeAndExpense incomeAndExpense) {
+        if (incomeAndExpense != null) {
+            db.beginTransaction();
+            try {
+                db.delete("income_expense", "id = ?", new String[]{String.valueOf(incomeAndExpense.getId())});
+                ContentValues values = new ContentValues();
+                if ("支出".equals(incomeAndExpense.getType())) {
+                    values.put("balance", incomeAndExpense.getAccount().getAccountMoney() + incomeAndExpense.getMoney());
+                } else if ("收入".equals(incomeAndExpense.getType())) {
+                    values.put("balance", incomeAndExpense.getAccount().getAccountMoney() - incomeAndExpense.getMoney());
+                }
+                values.put("updateTime", TimeUtil.getCurrentTime("yyyy-MM-dd HH:mm"));
+                db.update("account", values, "id = ?", new String[]{String.valueOf(incomeAndExpense.getAccount().getId())});
+                db.setTransactionSuccessful();
+            } catch (Exception e) {
+                LogUtil.e("Error", "delete fail");
+            } finally {
+                db.endTransaction();
+            }
+
         }
     }
 
@@ -404,6 +459,19 @@ public class MyMoneyDb {
     }
 
 
+    public Account getAccountById(int id) {
+        Cursor cursor = db.query("account", null, "id = ?", new String[]{String.valueOf(id)}, null, null, null);
+        Account account = new Account();
+        while (cursor.moveToNext()) {
+            account.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            account.setAccountName(cursor.getString(cursor.getColumnIndex("accountName")));
+            account.setAccountMoney(cursor.getFloat(cursor.getColumnIndex("balance")));
+            account.setUpdateTime(cursor.getString(cursor.getColumnIndex("updateTime")));
+            account.setSyncTime(cursor.getString(cursor.getColumnIndex("syncTime")));
+        }
+        return account;
+    }
+
     public List<Account> getAllAccount() {
         accountList.clear();
         Cursor cursor = db.query("account", null, null, null, null, null, null);
@@ -444,6 +512,152 @@ public class MyMoneyDb {
     public void deleteAccount(Account account) {
         if (account != null) {
             db.delete("account", "id = ?", new String[]{String.valueOf(account.getId())});
+        }
+    }
+
+
+    public List<Transfer> getTransfer(String year, String month) {
+        transferList.clear();
+        String sql = "select * from transfer where strftime('%m',transferTime) = ? and strftime('%Y',transferTime) = ? " +
+                "order by transferTime";
+        Cursor cursor = db.rawQuery(sql, new String[]{month, year});
+        while (cursor.moveToNext()) {
+            Transfer transfer = new Transfer();
+            transfer.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            transfer.setMoney(cursor.getFloat(cursor.getColumnIndex("money")));
+            transfer.setTransferTime(cursor.getString(cursor.getColumnIndex("transferTime")));
+            transfer.setUpdateTime(cursor.getString(cursor.getColumnIndex("updateTime")));
+            transfer.setSyncTime(cursor.getString(cursor.getColumnIndex("syncTime")));
+            transfer.setFromAccount(getAccountById(cursor.getInt(cursor.getColumnIndex("fromAccount"))));
+            transfer.setToAccount(getAccountById(cursor.getInt(cursor.getColumnIndex("toAccount"))));
+            transferList.add(transfer);
+        }
+        cursor.close();
+        return transferList;
+    }
+
+    public void insertTransfer(Transfer transfer) {
+        if (transfer != null) {
+            ContentValues values = new ContentValues();
+            values.put("money", transfer.getMoney());
+            values.put("fromAccount", transfer.getFromAccount().getId());
+            values.put("toAccount", transfer.getToAccount().getId());
+            values.put("transferTime", transfer.getTransferTime());
+            values.put("updateTime", transfer.getUpdateTime());
+
+            ContentValues valuesFrom = new ContentValues();
+            valuesFrom.put("balance", transfer.getFromAccount().getAccountMoney() - transfer.getMoney());
+            valuesFrom.put("updateTime", transfer.getUpdateTime());
+
+            ContentValues valuesTo = new ContentValues();
+            valuesTo.put("balance", transfer.getToAccount().getAccountMoney() + transfer.getMoney());
+            valuesTo.put("updateTime", transfer.getUpdateTime());
+            db.beginTransaction();
+            try {
+                db.insert("transfer", null, values);
+                db.update("account", valuesFrom, "id = ?", new String[]{String.valueOf(transfer.getFromAccount().getId())});
+                db.update("account", valuesTo, "id = ?", new String[]{String.valueOf(transfer.getToAccount().getId())});
+                db.setTransactionSuccessful();
+            } catch (Exception e) {
+
+            } finally {
+                db.endTransaction();
+            }
+
+        }
+    }
+
+    public void updateTransfer(Transfer oldTransfer, Transfer newTransfer) {
+        if (newTransfer != null && oldTransfer != null) {
+            ContentValues values = new ContentValues();
+            values.put("money", newTransfer.getMoney());
+            values.put("fromAccount", newTransfer.getFromAccount().getId());
+            values.put("toAccount", newTransfer.getToAccount().getId());
+            values.put("transferTime", newTransfer.getTransferTime());
+            values.put("updateTime", newTransfer.getUpdateTime());
+            db.beginTransaction();
+            try {
+                db.update("transfer", values, "id = ?", new String[]{String.valueOf(newTransfer.getId())});
+                ContentValues valuesOld = new ContentValues();
+                ContentValues valuesNew = new ContentValues();
+                ContentValues valuesChange = new ContentValues();
+                if (!oldTransfer.getFromAccount().getAccountName().equals(newTransfer.getFromAccount().getAccountName()) ||
+                        !oldTransfer.getToAccount().getAccountName().equals(newTransfer.getToAccount().getAccountName())) {
+                    //更改转出账户
+                    if (!oldTransfer.getFromAccount().getAccountName().equals(newTransfer.getFromAccount().getAccountName())) {
+                        valuesOld.put("balance", oldTransfer.getFromAccount().getAccountMoney() + oldTransfer.getMoney());
+                        valuesOld.put("updateTime", newTransfer.getUpdateTime());
+                        valuesNew.put("balance", newTransfer.getFromAccount().getAccountMoney() - newTransfer.getMoney());
+                        valuesNew.put("updateTime", newTransfer.getUpdateTime());
+                        valuesChange.put("balance", oldTransfer.getToAccount().getAccountMoney() - oldTransfer.getMoney() + newTransfer.getMoney());
+                        valuesChange.put("updateTime", newTransfer.getUpdateTime());
+                        db.update("account", valuesOld, "id = ?", new String[]{String.valueOf(oldTransfer.getFromAccount().getId())});
+                        db.update("account", valuesNew, "id = ?", new String[]{String.valueOf(newTransfer.getFromAccount().getId())});
+                        db.update("account", valuesChange, "id = ?", new String[]{String.valueOf(oldTransfer.getToAccount().getId())});
+                        valuesOld.clear();
+                        valuesNew.clear();
+                    } else {
+                        valuesNew.put("balance", oldTransfer.getFromAccount().getAccountMoney() + oldTransfer.getMoney() - newTransfer.getMoney());
+                        valuesNew.put("updateTime", newTransfer.getUpdateTime());
+                        db.update("account", valuesNew, "id = ?", new String[]{String.valueOf(newTransfer.getFromAccount().getId())});
+                        valuesNew.clear();
+                    }
+                    //更改转入账户
+                    if (!oldTransfer.getToAccount().getAccountName().equals(newTransfer.getToAccount().getAccountName())) {
+                        valuesOld.put("balance", oldTransfer.getToAccount().getAccountMoney() - oldTransfer.getMoney());
+                        valuesOld.put("updateTime", newTransfer.getUpdateTime());
+                        valuesNew.put("balance", newTransfer.getToAccount().getAccountMoney() + newTransfer.getMoney());
+                        valuesNew.put("updateTime", newTransfer.getUpdateTime());
+                        valuesChange.put("balance", oldTransfer.getFromAccount().getAccountMoney() + oldTransfer.getMoney() - newTransfer.getMoney());
+                        valuesChange.put("updateTime", newTransfer.getUpdateTime());
+                        db.update("account", valuesOld, "id = ?", new String[]{String.valueOf(oldTransfer.getToAccount().getId())});
+                        db.update("account", valuesNew, "id = ?", new String[]{String.valueOf(newTransfer.getToAccount().getId())});
+                        db.update("account", valuesChange, "id = ?", new String[]{String.valueOf(oldTransfer.getFromAccount().getId())});
+                        valuesOld.clear();
+                        valuesNew.clear();
+                    } else {
+                        valuesNew.put("balance", oldTransfer.getToAccount().getAccountMoney() - oldTransfer.getMoney() + newTransfer.getMoney());
+                        valuesNew.put("updateTime", newTransfer.getUpdateTime());
+                        db.update("account", valuesNew, "id = ?", new String[]{String.valueOf(newTransfer.getToAccount().getId())});
+                        valuesNew.clear();
+                    }
+                } else {
+                    valuesNew.put("balance", oldTransfer.getFromAccount().getAccountMoney() + oldTransfer.getMoney() - newTransfer.getMoney());
+                    valuesNew.put("updateTime", newTransfer.getUpdateTime());
+                    db.update("account", valuesNew, "id = ?", new String[]{String.valueOf(oldTransfer.getFromAccount().getId())});
+                    valuesNew.clear();
+                    valuesNew.put("balance", oldTransfer.getToAccount().getAccountMoney() - oldTransfer.getMoney() + newTransfer.getMoney());
+                    valuesNew.put("updateTime", newTransfer.getUpdateTime());
+                    db.update("account", valuesNew, "id = ?", new String[]{String.valueOf(oldTransfer.getToAccount().getId())});
+                }
+                db.setTransactionSuccessful();
+            } catch (Exception e) {
+            } finally {
+                db.endTransaction();
+            }
+
+        }
+    }
+
+    public void deleteTransfer(Transfer transfer) {
+        if (transfer != null) {
+            ContentValues valuesFrom = new ContentValues();
+            valuesFrom.put("balance", transfer.getFromAccount().getAccountMoney() + transfer.getMoney());
+            valuesFrom.put("updateTime", transfer.getUpdateTime());
+            ContentValues valuesTo = new ContentValues();
+            valuesTo.put("balance", transfer.getFromAccount().getAccountMoney() - transfer.getMoney());
+            valuesTo.put("updateTime", transfer.getUpdateTime());
+            db.beginTransaction();
+            try {
+                db.delete("transfer", "id = ?", new String[]{String.valueOf(transfer.getId())});
+                db.update("account", valuesFrom, "id = ?", new String[]{String.valueOf(transfer.getFromAccount().getId())});
+                db.update("account", valuesTo, "id = ?", new String[]{String.valueOf(transfer.getToAccount().getId())});
+                db.setTransactionSuccessful();
+            } catch (Exception e) {
+
+            } finally {
+                db.endTransaction();
+            }
         }
     }
 }

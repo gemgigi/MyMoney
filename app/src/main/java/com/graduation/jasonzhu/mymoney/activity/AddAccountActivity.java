@@ -66,6 +66,7 @@ public class AddAccountActivity extends AppCompatActivity {
                 account.setUpdateTime(TimeUtil.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
                 myMoneyDb.insertAccount(account);
                 Toast.makeText(AddAccountActivity.this,"添加成功！",Toast.LENGTH_SHORT).show();
+                setResult(2,getIntent());
                 finish();
             }
         });
@@ -76,7 +77,6 @@ public class AddAccountActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(AddAccountActivity.this) {
                     @Override
                     public AlertDialog show() {
-
                         setView(calculatorView.getCalculatoView(AddAccountActivity.this));
                         return super.show();
                     }

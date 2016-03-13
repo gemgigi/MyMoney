@@ -10,6 +10,17 @@ public class Summary {
     private String month;
     private String year;
 
+    @Override
+    public String toString() {
+        return "Summary{" +
+                "income='" + income + '\'' +
+                ", expense='" + expense + '\'' +
+                ", balance='" + balance + '\'' +
+                ", month='" + month + '\'' +
+                ", year='" + year + '\'' +
+                '}';
+    }
+
     public String getIncome() {
         return income;
     }
