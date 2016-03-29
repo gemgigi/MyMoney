@@ -202,7 +202,7 @@ public class EditIncomeActivity extends AppCompatActivity {
         dateTv = (TextView) findViewById(R.id.mm_edit_income_date_tv);
         remarkEt = (EditText) findViewById(R.id.mm_edit_income_remark);
         saveBtn = (Button) findViewById(R.id.mm_edit_income_save_btn);
-        deleteBtn = (Button) findViewById(R.id.mm_edit_income_delete_btn);
+   // deleteBtn = (Button) findViewById(R.id.mm_edit_income_delete_btn);
         toolbar = (Toolbar) findViewById(R.id.edit_income_toolbar);
         setSupportActionBar(toolbar);
         setTitle("编辑" + type);
@@ -232,7 +232,6 @@ public class EditIncomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                startActivity(new Intent(EditIncomeActivity.this, MainActivity.class));
                 finish();
                 break;
             case R.id.action_delete:

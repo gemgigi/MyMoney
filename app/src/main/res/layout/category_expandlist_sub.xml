@@ -10,7 +10,6 @@
         android:id="@+id/category_overview_sub_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="abcdefg"
         android:textSize="18sp"
-        android:textColor="@color/colorText"/>
+        android:textColor="@color/secondary_text"/>
 </LinearLayout>

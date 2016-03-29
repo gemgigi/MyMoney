@@ -46,10 +46,13 @@ public class CategoryFragment extends Fragment {
     private ViewPagerAdapter viewPagerAdapter;
     private static final String TAG = "TEST";
     private MyMoneyDb myMoneyDb;
-    private ExpenseCategoryFragment expenseCategoryFragment ;
+    private ExpenseCategoryFragment expenseCategoryFragment;
     private IncomeCategoryFragment incomeCategoryFragment;
     private List<Category> allCateogrys;
     private List<String> allCateogryName;
+    private List<Category> incomeCategoryList = new ArrayList<>();
+    private List<Category> expenseCategoryList = new ArrayList<>();
+
 
     public List<String> getAllCateogryName() {
         myMoneyDb = MyMoneyDb.getInstance(getContext());
@@ -57,11 +60,6 @@ public class CategoryFragment extends Fragment {
         return allCateogryName;
     }
 
-//    public List<Category> getAllCateogrys() {
-//        myMoneyDb = MyMoneyDb.getInstance(getContext());
-//        allCateogrys = myMoneyDb.getAllCategory("");
-//        return allCateogrys;
-//    }
 
     @Override
     public void onAttach(Context context) {
@@ -79,33 +77,20 @@ public class CategoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "CategoryFragment onCreateView");
-//        final SharedPreferences sp = getActivity().getPreferences(Context.MODE_PRIVATE);
-//        isFirstLoad = sp.getBoolean("isFirstLoad", true);
-//        Log.d("isFirstLoad", "isFirstLoad = " + isFirstLoad);
-//        if (isFirstLoad) {
-//            myMoneyDb = MyMoneyDb.getInstance(getContext());
-//            showProgressDialog();
-//            myMoneyDb.loadCategory(TestData.getCategoryList(), new LoadDataCallBackListener() {
-//                @Override
-//                public void onFinish() {
-//                    closeProgressDialog();
-//                    SharedPreferences.Editor editor = sp.edit();
-//                    editor.putBoolean("isFirstLoad", false);
-//                    editor.commit();
-//                }
-//                @Override
-//                public void onError(Exception e) {
-//                    closeProgressDialog();
-//                    Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//        }
         initView();
+        initData();
         setHasOptionsMenu(true);
         return rootView;
     }
 
+    private void initData() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
+            }
+        }).start();
+    }
 
     private void initView() {
         rootView = LayoutInflater.from(getContext()).inflate(R.layout.category_overview, null);
@@ -137,13 +122,13 @@ public class CategoryFragment extends Fragment {
             Intent intent = new Intent(getActivity(), AddCategoryActivity.class);
             String type = (String) tabLayout.getTabAt(tabLayout.getSelectedTabPosition()).getText();
             intent.putExtra("type", type);
-            if("收入".equals(type)){
+            if ("收入".equals(type)) {
                 intent.putStringArrayListExtra("categoryList", (ArrayList<String>) getAllCateogryName());
             }
-            if("支出".equals(type)){
+            if ("支出".equals(type)) {
                 intent.putStringArrayListExtra("categoryList", (ArrayList<String>) getAllCateogryName());
             }
-            startActivityForResult(intent,1);
+            startActivityForResult(intent, 1);
         }
         return true;
     }

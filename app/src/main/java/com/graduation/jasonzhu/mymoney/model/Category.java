@@ -94,4 +94,17 @@ public class Category implements Serializable {
     public void setCategoryList(List<Category> categoryList) {
         this.categoryList = categoryList;
     }
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", type='" + type + '\'' +
+                ", name='" + name + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", syncTime='" + syncTime + '\'' +
+                ", categoryList=" + categoryList +
+                ", parentId=" + parentId +
+                '}';
+    }
 }

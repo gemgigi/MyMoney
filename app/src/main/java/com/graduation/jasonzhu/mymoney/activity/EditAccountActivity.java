@@ -121,7 +121,6 @@ public class EditAccountActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                startActivity(new Intent(EditAccountActivity.this, MainActivity.class));
                 finish();
                 break;
             case R.id.action_delete:

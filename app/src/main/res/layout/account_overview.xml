@@ -8,11 +8,11 @@
     <TextView
         android:id="@+id/mm_main_account_balence_tv"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:text="1000000.00"
+        android:layout_height="80dp"
         android:textSize="30sp"
         android:gravity="center"
-        android:singleLine="true"/>
+        android:singleLine="true"
+        android:textColor="@color/primary_text"/>
     <ListView
         android:id="@+id/mm_main_account_list"
         android:layout_width="match_parent"

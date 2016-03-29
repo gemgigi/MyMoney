@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.graduation.jasonzhu.mymoney.R;
 import com.graduation.jasonzhu.mymoney.model.Account;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -45,7 +46,8 @@ public class AccountListViewAdapter extends ArrayAdapter {
             viewHolder = (AccountViewHolder) view.getTag();
         }
         viewHolder.tv_categoryName.setText(accountList.get(position).getAccountName());
-        viewHolder.tv_categoryMoney.setText(String.valueOf(accountList.get(position).getAccountMoney()));
+        BigDecimal bd = new BigDecimal(String.valueOf(accountList.get(position).getAccountMoney()));
+        viewHolder.tv_categoryMoney.setText(bd.toPlainString());
         return view;
     }
 

@@ -25,6 +25,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.graduation.jasonzhu.mymoney.R;
@@ -33,6 +34,7 @@ import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
 import com.graduation.jasonzhu.mymoney.fragment.AccountFragment;
 import com.graduation.jasonzhu.mymoney.fragment.CategoryFragment;
 import com.graduation.jasonzhu.mymoney.fragment.IncomeAndExpenseFragment;
+import com.graduation.jasonzhu.mymoney.fragment.ReportFragment;
 import com.graduation.jasonzhu.mymoney.model.TestData;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 import com.graduation.jasonzhu.mymoney.util.TimeUtil;
@@ -46,23 +48,37 @@ public class MainActivity extends AppCompatActivity
     private FloatingActionButton fab;
     private DrawerLayout drawer;
     private NavigationView navigationView;
+    private TextView balanceTv;
     private static TabLayout tabLayout;
+    private TabLayout reportTabLayout;
     private Fragment currentFragment;
     private IncomeAndExpenseFragment incomeAndExpenseFragment = new IncomeAndExpenseFragment();
     private AccountFragment accountFragment = new AccountFragment();
     private CategoryFragment categoryFragment = new CategoryFragment();
+    private ReportFragment reportFragment = new ReportFragment();
     private boolean isFirstLoad = true;
     private MyMoneyDb myMoneyDb;
     private ProgressDialog progressDialog;
     private SharedPreferences sp;
-    private static final int INCOME_EXPENSE_RESULT = 1;
-    private static final int ACCOUNT_RESULT = 2;
-    private static final int CATEGORY_RESULT = 3;
+    public static final int INCOME_EXPENSE_RESULT = 1;
+    public static final int ACCOUNT_RESULT = 2;
+    public static final int INCOME_CATEGORY_RESULT = 3;
+    public static final int EXPENSE_CATEGORY_RESULT = 4;
+    public static final int CATEGORY_RESULT = 5;
     private boolean isOperateOnIncomeExpense = false;
     private boolean isOperateOnAccount = false;
+    private boolean isOperateOnIncomeCategory = false;
+    private boolean isOperateOnExpenseCategory = false;
     private boolean isOperateOnCategory = false;
-    private OperateListener operateListener;
 
+
+    public boolean isOperateOnCategory() {
+        return isOperateOnCategory;
+    }
+
+    public void setIsOperateOnCategory(boolean isOperateOnCategory) {
+        this.isOperateOnCategory = isOperateOnCategory;
+    }
 
     public interface OperateListener {
         void onOperate(boolean value);
@@ -77,10 +93,6 @@ public class MainActivity extends AppCompatActivity
         this.isOperateOnAccount = isOperateOnAccount;
     }
 
-    public void setIsOperateOnCategory(boolean isOperateOnCategory) {
-        this.isOperateOnCategory = isOperateOnCategory;
-    }
-
     public boolean isOperateOnIncomeExpense() {
         return isOperateOnIncomeExpense;
     }
@@ -89,8 +101,28 @@ public class MainActivity extends AppCompatActivity
         return isOperateOnAccount;
     }
 
-    public boolean isOperateOnCategory() {
-        return isOperateOnCategory;
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
+
+    public void setToolbar(Toolbar toolbar) {
+        this.toolbar = toolbar;
+    }
+
+    public boolean isOperateOnIncomeCategory() {
+        return isOperateOnIncomeCategory;
+    }
+
+    public void setIsOperateOnIncomeCategory(boolean isOperateOnIncomeCategory) {
+        this.isOperateOnIncomeCategory = isOperateOnIncomeCategory;
+    }
+
+    public boolean isOperateOnExpenseCategory() {
+        return isOperateOnExpenseCategory;
+    }
+
+    public void setIsOperateOnExpenseCategory(boolean isOperateOnExpenseCategory) {
+        this.isOperateOnExpenseCategory = isOperateOnExpenseCategory;
     }
 
     @Override
@@ -139,7 +171,21 @@ public class MainActivity extends AppCompatActivity
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         tabLayout = (TabLayout) findViewById(R.id.mm_main_category_tab);
+        reportTabLayout = (TabLayout) findViewById(R.id.mm_main_report_tab);
+        balanceTv = (TextView) findViewById(R.id.mm_main_balance_tv);
         setSupportActionBar(toolbar);
+    }
+
+    public static TabLayout getTabLayout() {
+        return tabLayout;
+    }
+
+    public TabLayout getReportTabLayout() {
+        return reportTabLayout;
+    }
+
+    public TextView getBalanceTv() {
+        return balanceTv;
     }
 
     @Override
@@ -148,9 +194,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public static TabLayout getTabLayout() {
-        return tabLayout;
-    }
 
     @Override
     public void onBackPressed() {
@@ -191,17 +234,29 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.mm_account) {
             setTitle(item.getTitle());
             tabLayout.setVisibility(View.GONE);
+            reportTabLayout.setVisibility(View.GONE);
+//            balanceTv.setVisibility(View.GONE);
             switchFragment(accountFragment);
         } else if (id == R.id.mm_income_expenses) {
             setTitle(item.getTitle());
             tabLayout.setVisibility(View.GONE);
+            reportTabLayout.setVisibility(View.GONE);
+//            balanceTv.setVisibility(View.VISIBLE);
             switchFragment(incomeAndExpenseFragment);
         } else if (id == R.id.mm_category) {
             setTitle(item.getTitle());
             tabLayout.setVisibility(View.VISIBLE);
+            reportTabLayout.setVisibility(View.GONE);
+//            balanceTv.setVisibility(View.GONE);
             switchFragment(categoryFragment);
         } else if (id == R.id.mm_setting) {
             setTitle(item.getTitle());
+        } else if (id == R.id.mm_report) {
+            setTitle(item.getTitle());
+            reportTabLayout.setVisibility(View.VISIBLE);
+            tabLayout.setVisibility(View.GONE);
+            switchFragment(reportFragment);
+
         }
         navigationView.setCheckedItem(id);
         drawer.closeDrawer(GravityCompat.START);
@@ -219,7 +274,6 @@ public class MainActivity extends AppCompatActivity
             }
             currentFragment = otherFragment;
         }
-
     }
 
     @Override
@@ -234,10 +288,10 @@ public class MainActivity extends AppCompatActivity
                 isOperateOnAccount = true;
                 break;
             case CATEGORY_RESULT:
-                Log.d("TAG", "main from category");
                 isOperateOnCategory = true;
+                isOperateOnExpenseCategory = true;
+                isOperateOnIncomeExpense = true;
                 break;
-
         }
     }
 

@@ -19,6 +19,7 @@ import com.graduation.jasonzhu.mymoney.util.LogUtil;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 import com.graduation.jasonzhu.mymoney.util.TimeUtil;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -104,9 +105,9 @@ public class DayAccountExpandLvAdapter extends BaseExpandableListAdapter {
             groupHolder = (GroupHolder) groupView.getTag();
         }
         groupHolder.month_tv.setText(expandListGroup.get(groupPosition).getMonth() + "月");
-        groupHolder.income_tv.setText(expandListGroup.get(groupPosition).getIncome());
-        groupHolder.expense_tv.setText(expandListGroup.get(groupPosition).getExpense());
-        groupHolder.balance_tv.setText(expandListGroup.get(groupPosition).getBalance());
+        groupHolder.income_tv.setText(new BigDecimal(expandListGroup.get(groupPosition).getIncome()).toPlainString());
+        groupHolder.expense_tv.setText(new BigDecimal(expandListGroup.get(groupPosition).getExpense()).toPlainString());
+        groupHolder.balance_tv.setText(new BigDecimal(expandListGroup.get(groupPosition).getBalance()).toPlainString());
         return groupView;
     }
 
@@ -162,7 +163,7 @@ public class DayAccountExpandLvAdapter extends BaseExpandableListAdapter {
                     }
                 }
                 itemHolder.category.setText(incomeAndExpense.getCategory().getCategoryList().get(0).getName());
-                itemHolder.money.setText(String.valueOf(incomeAndExpense.getMoney()));
+                itemHolder.money.setText(new BigDecimal(String.valueOf(incomeAndExpense.getMoney())).toPlainString());
                 switch (incomeAndExpense.getType()) {
                     case "支出":
                         itemHolder.money.setTextColor(context.getResources().getColor(R.color.expense));
@@ -190,7 +191,7 @@ public class DayAccountExpandLvAdapter extends BaseExpandableListAdapter {
                 Account fromAccount = incomeAndExpense.getTransfer().getFromAccount();
                 Account toAccount = incomeAndExpense.getTransfer().getToAccount();
                 transferHolder.account.setText(fromAccount.getAccountName()+" > "+toAccount.getAccountName());
-                transferHolder.money.setText(String.valueOf(incomeAndExpense.getTransfer().getMoney()));
+                transferHolder.money.setText(new BigDecimal(String.valueOf(incomeAndExpense.getTransfer().getMoney())).toPlainString());
                 break;
         }
         return childView;

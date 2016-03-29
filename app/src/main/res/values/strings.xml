@@ -4,9 +4,16 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="navigation_drawer_income_expense">我的收支</string>
+    <string name="navigation_drawer_account">我的账户</string>
+    <string name="navigation_drawer_category">收支分类</string>
+    <string name="navigation_drawer_report">报表统计</string>
+    <string name="navigation_drawer_setting">设置</string>
     <string name="action_settings">Settings</string>
     <string name="action_delete">删除</string>
     <string name="save_button">保存</string>
+    <string name="transfer_btn">转账</string>
     <string name="action_account_add">添加账户</string>
     <string name="action_category_add">添加类别</string>
+
 </resources>
