@@ -15,9 +15,7 @@ import android.widget.Toast;
 
 import com.graduation.jasonzhu.mymoney.R;
 import com.graduation.jasonzhu.mymoney.activity.EditExchangeActivity;
-import com.graduation.jasonzhu.mymoney.activity.EditExpenseActivity;
 import com.graduation.jasonzhu.mymoney.activity.EditIncomeActivity;
-import com.graduation.jasonzhu.mymoney.activity.MainActivity;
 import com.graduation.jasonzhu.mymoney.adapter.DayAccountExpandLvAdapter;
 import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
 import com.graduation.jasonzhu.mymoney.model.DaySummary;
@@ -26,10 +24,12 @@ import com.graduation.jasonzhu.mymoney.model.Summary;
 import com.graduation.jasonzhu.mymoney.model.TestData;
 import com.graduation.jasonzhu.mymoney.model.Transfer;
 import com.graduation.jasonzhu.mymoney.util.DaySummaryComparator;
+import com.graduation.jasonzhu.mymoney.util.ExpandableListViewUtil;
 import com.graduation.jasonzhu.mymoney.util.LogUtil;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 import com.graduation.jasonzhu.mymoney.util.TimeUtil;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -179,6 +179,9 @@ public class IncomeAndExpenseFragment extends Fragment {
         expandableListView.setAdapter(dayAccountExpandLvAdapter);
         //去除箭头
         expandableListView.setGroupIndicator(null);
+  //      ExpandableListViewUtil.setListViewHeightBasedOnChildren(expandableListView);
+//        yearBalanceTv = ((MainActivity)getActivity()).getBalanceTv();
+//        yearBalanceTv.setVisibility(View.VISIBLE);
         yearBalanceTv = (TextView) rootView.findViewById(R.id.mm_main_balance_tv);
         yearIncomeTv = (TextView) rootView.findViewById(R.id.mm_main_income_tv);
         yearExpenseTv = (TextView) rootView.findViewById(R.id.mm_main_expense_tv);
@@ -222,13 +225,14 @@ public class IncomeAndExpenseFragment extends Fragment {
 //        if (mainActivity.isOperateOnIncomeExpense()) {
         getData(TimeUtil.getCurrentTime("yyyy-MM").split("-"));
         LogUtil.d(TAG, groupList.toString());
-        yearExpenseTv.setText(yearSummary.getExpense());
-        yearIncomeTv.setText(yearSummary.getIncome());
-        yearBalanceTv.setText(yearSummary.getBalance());
+        yearExpenseTv.setText(new BigDecimal(yearSummary.getExpense()).toPlainString());
+        yearIncomeTv.setText(new BigDecimal(yearSummary.getIncome()).toPlainString());
+        yearBalanceTv.setText(new BigDecimal(yearSummary.getBalance()).toPlainString());
         // dayAccountExpandLvAdapter.notifyDataSetChanged();
         dayAccountExpandLvAdapter = new DayAccountExpandLvAdapter(getContext()
                 , groupList, childList);
         expandableListView.setAdapter(dayAccountExpandLvAdapter);
+      //  ExpandableListViewUtil.setListViewHeightBasedOnChildren(expandableListView);
 //            mainActivity.setIsOperateOnIncomeExpense(false);
 //            Log.d(TAG, "IncomeAndExpenseFragment 刷新");
         //}
@@ -277,12 +281,12 @@ public class IncomeAndExpenseFragment extends Fragment {
             getGroupList(time[0]);
             //查询月明细
             for (int i = 0; i < groupList.size(); i++) {
-                String month = "";
-                if (1 < Integer.valueOf(groupList.get(i).getMonth()) && Integer.valueOf(groupList.get(i).getMonth()) < 10) {
-                    month = "0" + Integer.valueOf(groupList.get(i).getMonth());
-                } else {
-                    month = groupList.get(i).getMonth();
-                }
+                String month = groupList.get(i).getMonth();
+//                if (1 <= Integer.valueOf(groupList.get(i).getMonth()) && Integer.valueOf(groupList.get(i).getMonth()) < 10) {
+//                    month = "0" + Integer.valueOf(groupList.get(i).getMonth());
+//                } else {
+//                    month = groupList.get(i).getMonth();
+//                }
                 getDayList(time[0], month);
                 getTransfer(time[0], month);
                 for (Transfer transfer : transferList) {
@@ -330,6 +334,5 @@ public class IncomeAndExpenseFragment extends Fragment {
                 }
             }
         }
-        LogUtil.d(TAG, childList.toString());
     }
 }

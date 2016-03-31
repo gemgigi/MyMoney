@@ -17,6 +17,7 @@ import com.graduation.jasonzhu.mymoney.util.LoadDataCallBackListener;
 import com.graduation.jasonzhu.mymoney.util.LogUtil;
 import com.graduation.jasonzhu.mymoney.util.TimeUtil;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,15 +89,19 @@ public class MyMoneyDb {
         Cursor cursor = db.rawQuery(sql, new String[]{year});
         float income = 0;
         float expense = 0;
-        int lastMonth = 0;
+        String lastMonth = "";
         float money;
         Summary summary = new Summary();
         Summary lastSummary = null;
         while (cursor.moveToNext()) {
             String type = cursor.getString(cursor.getColumnIndex("type"));
-            int tempMonth = cursor.getInt(cursor.getColumnIndex("month"));
+            //BUG
+            String tempMonth = cursor.getString(cursor.getColumnIndex("month"));
+//            if ("0".equals(tempMonth.substring(0, 1))) {
+//                tempMonth = tempMonth.substring(1, 2);
+//            }
             money = cursor.getFloat(cursor.getColumnIndex("total"));
-            if (lastMonth != tempMonth) {
+            if (!lastMonth.equals(tempMonth)) {
                 summary = new Summary();
                 if (lastSummary != null) {
                     if (lastSummary.getIncome() == null) {
@@ -105,9 +110,11 @@ public class MyMoneyDb {
                     if (lastSummary.getExpense() == null) {
                         lastSummary.setExpense(String.valueOf(0.0f));
                     }
-                    lastSummary.setMonth(String.valueOf(lastMonth));
+                    lastSummary.setMonth(lastMonth);
                     lastSummary.setBalance(String.valueOf(Math.abs(expense - income)));
                     monthSummaryList.add(lastSummary);
+                    expense = 0;
+                    income = 0;
                 }
             }
             if ("收入".equals(type)) {
@@ -351,7 +358,7 @@ public class MyMoneyDb {
         return categoryList;
     }
 
-    public List<Category> getAllCategory(String type) {
+    public synchronized List<Category> getAllCategory(String type) {
         List<Category> categoryMainList = getMainCategory(type);
         for (Category c : categoryMainList) {
             c.setCategoryList(getSubCategory(c.getId()));

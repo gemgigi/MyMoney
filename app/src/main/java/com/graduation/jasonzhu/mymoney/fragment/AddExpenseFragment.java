@@ -117,6 +117,7 @@ public class AddExpenseFragment extends Fragment {
                 new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        LogUtil.d("DATETEST","date = "+monthOfYear);
                         if (0 <= monthOfYear && monthOfYear < 9) {
                             if (0 < dayOfMonth && dayOfMonth < 10) {
                                 selectedTime = year + "-" + 0 + (monthOfYear + 1) + "-" + "0" + dayOfMonth + " " + TimeUtil.getCurrentTime("HH:mm");

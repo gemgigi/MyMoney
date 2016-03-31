@@ -18,9 +18,12 @@ import com.graduation.jasonzhu.mymoney.activity.MainActivity;
 import com.graduation.jasonzhu.mymoney.adapter.CategoryExpandLvAdapter;
 import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
 import com.graduation.jasonzhu.mymoney.model.Category;
+import com.graduation.jasonzhu.mymoney.util.ExpandableListViewUtil;
+import com.graduation.jasonzhu.mymoney.util.LoadDataCallBackListener;
 import com.graduation.jasonzhu.mymoney.util.LogUtil;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,13 +34,26 @@ public class IncomeCategoryFragment extends Fragment {
     private ExpandableListView expandableListView;
     private CategoryExpandLvAdapter categoryExpandLvAdapter;
     private int lastClick = -1;
-    private List<Category> categoryList;
+    private List<Category> categoryList = new ArrayList<>();
     private MyMoneyDb myMoneyDb;
     private String TAG = "TEST";
+    private LoadDataCallBackListener loadDataCallBackListener;
+    private boolean isCreate = false;
 
-    public List<Category> getCategoryList() {
-        myMoneyDb = MyMoneyDb.getInstance(getContext());
-        categoryList = myMoneyDb.getAllCategory("收入");
+
+    public List<Category> getCategoryList(final LoadDataCallBackListener loadDataCallBackListener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                myMoneyDb = MyMoneyDb.getInstance(getContext());
+                try {
+                    categoryList = myMoneyDb.getAllCategory("收入");
+                    loadDataCallBackListener.onFinish(isCreate);
+                } catch (Exception e) {
+                    loadDataCallBackListener.onError(e);
+                }
+            }
+        }).start();
         return categoryList;
     }
 
@@ -52,17 +68,67 @@ public class IncomeCategoryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "IncomeCategoryFragment onCreate");
     }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "IncomeCategoryFragment onCreateView");
-        initView();
+        rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.category_list, null);
+        expandableListView = (ExpandableListView) rootView.findViewById(R.id.mm_main_category_expanlist);
+        categoryExpandLvAdapter = new CategoryExpandLvAdapter(getContext(), categoryList);
+        expandableListView.setAdapter(categoryExpandLvAdapter);
+        expandableListView.setGroupIndicator(null);
+        setOnClickListener();
+        initData();
+        //  initView();
+        return rootView;
+    }
+
+    private void initData() {
+        getCategoryList(new LoadDataCallBackListener() {
+            @Override
+            public void onFinish(boolean isCreate) {
+                LogUtil.d("TAG", "isCreate = " + isCreate);
+                if (!isCreate) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initView();
+                        }
+                    });
+                } else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            categoryExpandLvAdapter.notifyDataSetChanged();
+//                    ExpandableListViewUtil.setListViewHeightBasedOnChildren(expandableListView);
+                            Log.d(TAG, "IncomeCategoryFragment 刷新");
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+    }
+
+    private void initView() {
+        categoryExpandLvAdapter = new CategoryExpandLvAdapter(getContext(), categoryList);
+        expandableListView.setAdapter(categoryExpandLvAdapter);
+        isCreate = true;
+
+    }
+
+    private void setOnClickListener() {
         expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
                 long packedPosition = expandableListView.getExpandableListPosition(position);
-
                 int itemType = ExpandableListView.getPackedPositionType(packedPosition);
                 int groupPosition = ExpandableListView.getPackedPositionGroup(packedPosition);
                 //   int childPosition = ExpandableListView.getPackedPositionChild(packedPosition);
@@ -104,21 +170,12 @@ public class IncomeCategoryFragment extends Fragment {
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 Intent intent = new Intent(getActivity(), EditCategoryActivity.class);
                 intent.putExtra("data", categoryList.get(groupPosition).getCategoryList().get(childPosition));
-                intent.putExtra("mainCategoryName",categoryList.get(groupPosition).getName());
+                intent.putExtra("mainCategoryName", categoryList.get(groupPosition).getName());
                 intent.putExtra("type", "二级类别");
                 startActivityForResult(intent, 1);
                 return false;
             }
         });
-        return rootView;
-    }
-
-    private void initView() {
-        rootView = LayoutInflater.from(MyApplication.getContext()).inflate(R.layout.category_list, null);
-        expandableListView = (ExpandableListView) rootView.findViewById(R.id.mm_main_category_expanlist);
-        categoryExpandLvAdapter = new CategoryExpandLvAdapter(getContext(), getCategoryList());
-        expandableListView.setAdapter(categoryExpandLvAdapter);
-        expandableListView.setGroupIndicator(null);
     }
 
     @Override
@@ -137,13 +194,13 @@ public class IncomeCategoryFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "IncomeCategoryFragment onResume");
-//        MainActivity mainActivity = (MainActivity) getActivity();
-//        if(mainActivity.isOperateOnCategory()){
-            getCategoryList();
-            categoryExpandLvAdapter.notifyDataSetChanged();
-          //  mainActivity.setIsOperateOnCategory(false);
-            Log.d(TAG, "IncomeCategoryFragment 刷新");
-     //   }
+        MainActivity mainActivity = (MainActivity) getActivity();
+        LogUtil.d(TAG,"IncomeCategory "+mainActivity.isOperateOnIncomeExpense());
+//        if (!isCreate) {
+            initData();
+//            mainActivity.setIsOperateOnIncomeExpense(false);
+//            LogUtil.d("TAG", "IncomeCategoryFragment 刷新");
+//        }
 
     }
 
@@ -176,4 +233,6 @@ public class IncomeCategoryFragment extends Fragment {
         super.onDetach();
         Log.d(TAG, "IncomeCategoryFragment onDetach");
     }
+
+
 }

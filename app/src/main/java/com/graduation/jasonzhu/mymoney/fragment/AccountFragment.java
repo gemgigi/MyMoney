@@ -27,6 +27,7 @@ import com.graduation.jasonzhu.mymoney.model.TestData;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -93,7 +94,8 @@ public class AccountFragment extends Fragment {
         for(Account account:accountList){
             balance += account.getAccountMoney();
         }
-        return String.valueOf(balance);
+        BigDecimal bd = new BigDecimal(String.valueOf(balance));
+        return bd.toPlainString();
     }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

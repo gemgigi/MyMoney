@@ -84,8 +84,13 @@
     <Button
         android:id="@+id/mm_operate_category_save_btn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/colorPrimary"
         android:text="@string/save_button"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:textColor="@color/saveButton"/>
 </RelativeLayout>

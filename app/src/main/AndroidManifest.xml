@@ -5,7 +5,7 @@
     <application
         android:name=".util.MyApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -20,7 +20,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.AddRecordActivity" />
-        <activity android:name=".activity.EditExpenseActivity" />
         <activity android:name=".activity.EditIncomeActivity" />
         <activity android:name=".activity.EditExchangeActivity" />
         <activity android:name=".activity.AddAccountActivity" />

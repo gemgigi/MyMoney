@@ -1,6 +1,7 @@
 package com.graduation.jasonzhu.mymoney.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,8 @@ import java.util.List;
  * Created by gemha on 2016/2/29.
  */
 public class CategoryExpandLvAdapter extends BaseExpandableListAdapter {
+
+
 
     private Context context;
     private List<Category> expandList;

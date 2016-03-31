@@ -1,88 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <include layout="@layout/toolbar"></include>
-    <TextView
-        android:id="@+id/mm_editexchange_money_et"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:text="0.00"
-        android:clickable="true"
-        android:textSize="40sp"
-        android:gravity="center"
-        />
+        android:layout_height="150dp"
+        android:elevation="8dp"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <include layout="@layout/toolbar"></include>
+
+        <TextView
+            android:id="@+id/mm_editexchange_money_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="0.00"
+            android:textSize="40sp" />
+    </android.support.design.widget.AppBarLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="转出"
-        android:textSize="15sp"
         android:paddingLeft="16dp"
-        android:textColor="@color/tabFontSelected"
-        />
+        android:paddingTop="10dp"
+        android:text="转出"
+        android:textColor="@color/secondary_text"
+        android:textSize="15sp" />
+
     <Spinner
         android:id="@+id/mm_editexchange_out_account_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></Spinner>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="转入"
-        android:textSize="15sp"
         android:paddingLeft="16dp"
-        android:textColor="@color/tabFontSelected"
-        />
+        android:text="转入"
+        android:textColor="@color/secondary_text"
+        android:textSize="15sp" />
+
     <Spinner
         android:id="@+id/mm_editexchange_into_account_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></Spinner>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="日期"
-        android:textSize="15sp"
         android:paddingLeft="16dp"
-        android:textColor="@color/tabFontSelected"
-        />
+        android:text="日期"
+        android:textColor="@color/secondary_text"
+        android:textSize="15sp" />
+
     <TextView
         android:id="@+id/mm_editexchange_date_tv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="2月19日 13:44"
+        android:gravity="center|left"
         android:paddingLeft="16dp"
+        android:text="2月19日 13:44"
         android:textSize="20sp"
-        android:gravity="center|left"/>
+        android:textColor="@color/primary_text"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="备注"
-        android:textSize="15sp"
         android:paddingLeft="16dp"
-        android:textColor="@color/tabFontSelected"
-        />
+        android:text="备注"
+        android:textColor="@color/secondary_text"
+        android:textSize="15sp" />
 
     <EditText
         android:id="@+id/mm_editexchange_remark"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingLeft="16dp"
-        />
-    <Button
-        android:id="@+id/mm_editexchange_save"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="保存"
-        android:textColor="@color/saveButton"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="8dp"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:elevation="8dp"
-        android:background="@color/colorPrimary"
-        />
+        android:paddingLeft="16dp" />
+
+
+        <Button
+            android:id="@+id/mm_editexchange_save"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@color/colorPrimary"
+            android:elevation="8dp"
+            android:gravity="center"
+            android:text="保存"
+            android:textColor="@color/saveButton"
+            android:textSize="20sp" />
+
+
 </LinearLayout>

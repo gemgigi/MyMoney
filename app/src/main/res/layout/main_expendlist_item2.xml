@@ -27,6 +27,7 @@
         android:text="现金 > 支付宝"
         android:gravity="center"
         android:singleLine="true"
+
         />
 
     <TextView
@@ -40,5 +41,6 @@
         android:paddingRight="16dp"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
+        android:singleLine="true"
         />
 </LinearLayout>

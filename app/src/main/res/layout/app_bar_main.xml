@@ -21,19 +21,38 @@
             layout="@layout/toolbar"
             app:popupTheme="@style/AppTheme.PopupOverlay"></include>
 
+        <!--
+        <TextView
+            android:id="@+id/mm_main_balance_tv"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:gravity="center"
+            android:textColor="@color/colorText"
+            android:textSize="25sp"
+            android:visibility="gone"
+            app:layout_scrollFlags="scroll|enterAlways" />-->
+
         <android.support.design.widget.TabLayout
             android:id="@+id/mm_main_category_tab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:tabSelectedTextColor="@color/tabFontSelected"
-            app:tabTextColor="@color/tabFontNormal"></android.support.design.widget.TabLayout>
+            app:tabSelectedTextColor="@color/primary_text"
+            app:tabTextColor="@color/secondary_text"></android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>
 
+    <FrameLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".activity.MainActivity">
 
-    <include
-        layout="@layout/content_main"
-        ></include>
+    </FrameLayout>
+    <!--
+        <include layout="@layout/content_main"></include>
+
+        -->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -41,5 +60,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_input_add" />
+        android:src="@mipmap/ic_add_white"
+        />
 </android.support.design.widget.CoordinatorLayout>

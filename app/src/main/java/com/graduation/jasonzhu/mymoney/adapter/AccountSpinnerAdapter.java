@@ -63,4 +63,3 @@ public class AccountSpinnerAdapter extends BaseAdapter {
         return view;
     }
 }
-

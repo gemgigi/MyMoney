@@ -1,119 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/edit_income_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:navigationIcon="?attr/homeAsUpIndicator"/>
-    <TextView
-        android:id="@+id/mm_edit_income_money_et"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:textSize="40sp"
-        android:gravity="center"
-        android:clickable="true"
-        />
+        android:layout_height="150dp"
+        android:elevation="8dp"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/edit_income_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        <TextView
+            android:id="@+id/mm_edit_income_money_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:gravity="center"
+            android:textSize="40sp" />
+    </android.support.design.widget.AppBarLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="分类"
-        android:textSize="15sp"
         android:paddingLeft="16dp"
         android:paddingTop="10dp"
-        android:textColor="@color/tabFontSelected"
-        />
+        android:text="分类"
+        android:textColor="@color/secondary_text"
+        android:textSize="15sp" />
+
     <LinearLayout
         android:id="@+id/mm_edit_income_category_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="horizontal">
+
         <TextView
             android:id="@+id/mm_edit_income_maincategory_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="娱乐"
-            android:paddingLeft="16dp"
-            android:textSize="20sp"
             android:layout_gravity="center"
-            />
+            android:paddingLeft="16dp"
+            android:text="娱乐"
+            android:textSize="20sp"
+            android:textColor="@color/primary_text"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=">"
-            android:paddingLeft="16dp"
-            android:textSize="20sp"
             android:layout_gravity="center"
-            />
+            android:paddingLeft="16dp"
+            android:text=">"
+            android:textSize="20sp"
+            android:textColor="@color/primary_text"/>
+
         <TextView
             android:id="@+id/mm_edit_income_subcategory_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="电影"
-            android:paddingLeft="16dp"
-            android:textSize="20sp"
             android:layout_gravity="center"
-            />
+            android:paddingLeft="16dp"
+            android:text="电影"
+            android:textSize="20sp"
+            android:textColor="@color/primary_text"/>
     </LinearLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="账户"
-        android:textSize="15sp"
         android:paddingLeft="16dp"
         android:paddingTop="10dp"
-        android:textColor="@color/tabFontSelected"
-        />
+        android:text="账户"
+        android:textColor="@color/secondary_text"
+        android:textSize="15sp" />
+
     <Spinner
         android:id="@+id/mm_edit_income_account_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></Spinner>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="日期"
-        android:textSize="15sp"
         android:paddingLeft="16dp"
-        android:textColor="@color/tabFontSelected"
-        />
+        android:text="日期"
+        android:textColor="@color/secondary_text"
+        android:textSize="15sp" />
+
     <TextView
         android:id="@+id/mm_edit_income_date_tv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="2月19日 13:44"
+        android:gravity="center|left"
         android:paddingLeft="16dp"
+        android:text="2月19日 13:44"
         android:textSize="20sp"
-        android:gravity="center|left"/>
+        android:textColor="@color/primary_text"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="备注"
-        android:textSize="15sp"
         android:paddingLeft="16dp"
         android:paddingTop="10dp"
-        android:textColor="@color/tabFontSelected"
-        />
+        android:text="备注"
+        android:textColor="@color/secondary_text"
+        android:textSize="15sp" />
 
     <EditText
         android:id="@+id/mm_edit_income_remark"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingLeft="16dp"
-        />
+        android:paddingLeft="16dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+
         <!--
         android:layout_marginTop="10dp"
         android:layout_marginLeft="16dp"
@@ -122,18 +133,18 @@
 
         <Button
             android:id="@+id/mm_edit_income_save_btn"
-            android:layout_width="0dp"
-            android:layout_weight="3"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/colorPrimary"
+            android:elevation="8dp"
+            android:gravity="center"
             android:text="保存"
             android:textColor="@color/saveButton"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:elevation="8dp"
-            android:background="@color/colorPrimary"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            />
+            android:textSize="20sp" />
+        <!--
         <Button
             android:id="@+id/mm_edit_income_delete_btn"
             android:layout_width="0dp"
@@ -144,6 +155,6 @@
             android:elevation="8dp"
             android:gravity="center"
             android:layout_marginRight="8dp"
-            />
-    </LinearLayout>
+            />-->
+
 </LinearLayout>

@@ -138,24 +138,8 @@ public class EditCategoryActivity extends AppCompatActivity {
                     }
                     myMoneyDb.updateCategory(targetCategory);
                 }
-//                //执行更新操作
-//                else {
-//                    Category category = new Category();
-//                    //由二级类别改为一级类别，该分类下流水
-//                    if ("一级类别".equals(classfication)) {
-//                        category.setName(categoryNameEt.getText().toString());
-//                        category.setType(categoryType);
-//                        category.setUpdateTime(TimeUtil.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
-//                        //由一级类别改为二级类别
-//                    } else {
-//                        category.setName(categoryNameEt.getText().toString());
-//                        category.setUpdateTime(TimeUtil.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
-//                        category.setParentId(mainCategorySelected.getId());
-//                    }
-//                    //执行删除和插入操作
-//                }
-                Toast.makeText(EditCategoryActivity.this,"删除成功！",Toast.LENGTH_SHORT).show();
-                setResult(3);
+                Toast.makeText(EditCategoryActivity.this,"修改成功！",Toast.LENGTH_SHORT).show();
+                setResult(MainActivity.CATEGORY_RESULT);
                 finish();
             }
         });
@@ -229,7 +213,7 @@ public class EditCategoryActivity extends AppCompatActivity {
                             myMoneyDb = MyMoneyDb.getInstance(EditCategoryActivity.this);
                             myMoneyDb.deleteCategory(targetCategory);
                             Toast.makeText(EditCategoryActivity.this,"删除成功！",Toast.LENGTH_SHORT).show();
-                            setResult(3);
+                            setResult(MainActivity.CATEGORY_RESULT);
                             finish();
                         }
                     })
