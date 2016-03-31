@@ -34,6 +34,7 @@ import com.graduation.jasonzhu.mymoney.db.MyMoneyDb;
 import com.graduation.jasonzhu.mymoney.fragment.AccountFragment;
 import com.graduation.jasonzhu.mymoney.fragment.CategoryFragment;
 import com.graduation.jasonzhu.mymoney.fragment.IncomeAndExpenseFragment;
+import com.graduation.jasonzhu.mymoney.fragment.ReportFragment;
 import com.graduation.jasonzhu.mymoney.model.TestData;
 import com.graduation.jasonzhu.mymoney.util.MyApplication;
 import com.graduation.jasonzhu.mymoney.util.TimeUtil;
@@ -49,10 +50,12 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
     private TextView balanceTv;
     private static TabLayout tabLayout;
+    private TabLayout reportTabLayout;
     private Fragment currentFragment;
     private IncomeAndExpenseFragment incomeAndExpenseFragment = new IncomeAndExpenseFragment();
     private AccountFragment accountFragment = new AccountFragment();
     private CategoryFragment categoryFragment = new CategoryFragment();
+    private ReportFragment reportFragment = new ReportFragment();
     private boolean isFirstLoad = true;
     private MyMoneyDb myMoneyDb;
     private ProgressDialog progressDialog;
@@ -168,12 +171,17 @@ public class MainActivity extends AppCompatActivity
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         tabLayout = (TabLayout) findViewById(R.id.mm_main_category_tab);
+        reportTabLayout = (TabLayout) findViewById(R.id.mm_main_report_tab);
         balanceTv = (TextView) findViewById(R.id.mm_main_balance_tv);
         setSupportActionBar(toolbar);
     }
 
     public static TabLayout getTabLayout() {
         return tabLayout;
+    }
+
+    public TabLayout getReportTabLayout() {
+        return reportTabLayout;
     }
 
     public TextView getBalanceTv() {
@@ -226,20 +234,29 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.mm_account) {
             setTitle(item.getTitle());
             tabLayout.setVisibility(View.GONE);
+            reportTabLayout.setVisibility(View.GONE);
 //            balanceTv.setVisibility(View.GONE);
             switchFragment(accountFragment);
         } else if (id == R.id.mm_income_expenses) {
             setTitle(item.getTitle());
             tabLayout.setVisibility(View.GONE);
+            reportTabLayout.setVisibility(View.GONE);
 //            balanceTv.setVisibility(View.VISIBLE);
             switchFragment(incomeAndExpenseFragment);
         } else if (id == R.id.mm_category) {
             setTitle(item.getTitle());
             tabLayout.setVisibility(View.VISIBLE);
+            reportTabLayout.setVisibility(View.GONE);
 //            balanceTv.setVisibility(View.GONE);
             switchFragment(categoryFragment);
         } else if (id == R.id.mm_setting) {
             setTitle(item.getTitle());
+        } else if (id == R.id.mm_report) {
+            setTitle(item.getTitle());
+            reportTabLayout.setVisibility(View.VISIBLE);
+            tabLayout.setVisibility(View.GONE);
+            switchFragment(reportFragment);
+
         }
         navigationView.setCheckedItem(id);
         drawer.closeDrawer(GravityCompat.START);
@@ -257,7 +274,6 @@ public class MainActivity extends AppCompatActivity
             }
             currentFragment = otherFragment;
         }
-
     }
 
     @Override
